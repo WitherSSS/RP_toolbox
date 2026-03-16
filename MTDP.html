@@ -301,7 +301,7 @@
             const CTl = parseFloat(data.CTl) || 800;
             const Clock = data.Clock;
             const TestMethod = data.TestMethod;
-            let Iqd = parseFloat(data.Iqd) || 0.5;
+            let Iqd = parseFloat(data.Iqd ?? 0.5);
             if (currentIndex == 2) Iqd = 1.2;
 
             const Isd = parseFloat(data.Isd ?? 7);

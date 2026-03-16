@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>母差斜率校验</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .input-group {
+            background: white;
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group label {
+            width: 100px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        .input-group .unit {
+            color: #888;
+            font-size: 14px;
+            width: 40px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            text-align: center;
+            line-height: 3em;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .result-container {
+            padding: 16px;
+            margin-bottom: 40px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            border-left: 4px solid #07c160;
+            padding-left: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        th,
+        td {
+            border: 1px solid #eee;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #fafafa;
+            color: #666;
+        }
+
+        .hint-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            padding: 8px;
+            background: #fdfdfd;
+            border-top: 1px dashed #eee;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            background-color: #07c160;
+            color: white;
+            width: 90%;
+            margin: 20px auto;
+            display: block;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:active {
+            background-color: #06ad56;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header" class="bg-white p-4 shadow-sm text-center font-bold text-lg sticky top-0 z-50">
+        母差斜率校验
+    </div>
+
+    <form id="calcForm">
+        <div class="section-title">定值</div>
+
+        <div class="input-group">
+            <label>启动值:</label>
+            <input type="number" step="any" name="Iqd" value="0.4">
+            <span class="unit">A</span>
+        </div>
+
+        <div class="section-title">动作特性</div>
+        <div class="input-group">
+            <label>保护厂家:</label>
+            <select id="manufacturer" class="flex-1 text-right bg-transparent outline-none text-[#07c160]">
+                <!-- Options injected via JS -->
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>斜率:</label>
+            <input type="number" step="any" id="K2_input" name="K2" value="0.3">
+            <span class="unit"></span>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="calculate()">计算</button>
+    </form>
+
+    <div id="results" class="hidden result-container">
+        <div id="resultContent">
+            <!-- Table results -->
+        </div>
+    </div>
+
+    <script>
+        const array = ["南瑞继保", "深瑞"];
+        const array_k = [
+            [0, .3],
+            [0, .43]
+        ];
+
+        let currentIndex = 0;
+
+        const mSelect = document.getElementById('manufacturer');
+        array.forEach((name, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = name;
+            mSelect.appendChild(opt);
+        });
+
+        mSelect.addEventListener('change', (e) => {
+            currentIndex = parseInt(e.target.value);
+            document.getElementById('K2_input').value = array_k[currentIndex][1];
+        });
+
+        function getAngles(branch, isReverse = false) {
+            if (branch === 1) {
+                return [0, 240, 120];
+            } else {
+                return isReverse ? [0, 240, 120] : [180, 60, 300];
+            }
+        }
+
+        function createTableHtml(title, b1Cur, b2Cur) {
+            const isReverse = parseFloat(b2Cur) < 0;
+            const b1Angles = getAngles(1);
+            const b2Angles = getAngles(2, isReverse);
+            const b1Val = Math.abs(parseFloat(b1Cur)).toFixed(3);
+            const b2Val = Math.abs(parseFloat(b2Cur)).toFixed(3);
+
+            let hint = "";
+            if (!isReverse) {
+                hint = "此时保护处于动作临界点。稍微 <span class='text-blue-600 font-bold'>↓降低↓</span> 支路2电流保护可靠动作， <span class='text-red-600 font-bold'>↑增加↑</span> 支路2电流保护可靠不动作。";
+            } else {
+                hint = "此时保护处于动作临界点。稍微 <span class='text-red-600 font-bold'>↑增加↑</span> 支路2电流保护可靠动作， <span class='text-blue-600 font-bold'>↓降低↓</span> 支路2电流保护可靠不动作。";
+            }
+
+            return `
+                <div class="result-card">
+                    <div class="result-card-title">${title}</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th colspan="2">支路1</th>
+                                <th colspan="2">支路2</th>
+                            </tr>
+                            <tr>
+                                <th>电流(A)</th>
+                                <th>角度(°)</th>
+                                <th>电流(A)</th>
+                                <th>角度(°)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>${b1Val}</td><td>${b1Angles[0]}</td><td>${b2Val}</td><td>${b2Angles[0]}</td></tr>
+                            <tr><td>${b1Val}</td><td>${b1Angles[1]}</td><td>${b2Val}</td><td>${b2Angles[1]}</td></tr>
+                            <tr><td>${b1Val}</td><td>${b1Angles[2]}</td><td>${b2Val}</td><td>${b2Angles[2]}</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="hint-text">${hint}</div>
+                </div>
+            `;
+        }
+
+        function calculate() {
+            const form = document.getElementById('calcForm');
+            const fd = new FormData(form);
+            const data = Object.fromEntries(fd.entries());
+
+            const Iqd = parseFloat(data.Iqd) || 0.4;
+            const K2 = parseFloat(data.K2) || 0.3;
+
+            const IhX1 = ((Iqd + Iqd / K2) / 2).toFixed(3);
+            const IlX1 = ((Iqd / K2 - Iqd) / 2).toFixed(3);
+
+            const IhX2 = ((Iqd + Iqd / K2 + K2 + 1) / 2).toFixed(3);
+            const IlX2 = ((Iqd / K2 + 1 - Iqd - K2) / 2).toFixed(3);
+
+            let html = "";
+            html += createTableHtml("1. 第一个校验点 (两支路变比设置需相同)", IhX1, IlX1);
+            html += createTableHtml("2. 第二个校验点", IhX2, IlX2);
+
+            document.getElementById('resultContent').innerHTML = html;
+            document.getElementById('results').classList.remove('hidden');
+
+            window.scrollTo({
+                top: document.getElementById('results').offsetTop - 80,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+
+</html>

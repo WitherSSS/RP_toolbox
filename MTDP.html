@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主变差动校验</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .input-group {
+            background: white;
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group label {
+            width: 100px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .input-group input,
+        .input-group select {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            text-align: right;
+            padding-right: 8px;
+            background: transparent;
+        }
+
+        .input-group .unit {
+            color: #888;
+            font-size: 14px;
+            width: 40px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            text-align: center;
+            line-height: 3em;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .result-container {
+            padding: 16px;
+            margin-bottom: 40px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            border-left: 4px solid #07c160;
+            padding-left: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        th,
+        td {
+            border: 1px solid #eee;
+            padding: 6px 2px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #fafafa;
+            color: #666;
+        }
+
+        .hint-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            padding: 8px;
+            background: #fdfdfd;
+            border-top: 1px dashed #eee;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            background-color: #07c160;
+            color: white;
+            width: 90%;
+            margin: 20px auto;
+            display: block;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:active {
+            background-color: #06ad56;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header" class="bg-white p-4 shadow-sm text-center font-bold text-lg sticky top-0 z-50">
+        主变差动校验
+    </div>
+
+    <form id="calcForm">
+        <div class="section-title">参数</div>
+
+        <div class="input-group">
+            <label>主变容量:</label>
+            <input type="number" step="any" name="S" value="50">
+            <span class="unit">MVA</span>
+        </div>
+        <div class="input-group">
+            <label>高侧额压:</label>
+            <input type="number" step="any" name="Uh" value="110">
+            <span class="unit">kV</span>
+        </div>
+        <div class="input-group">
+            <label>低侧额压:</label>
+            <input type="number" step="any" name="Ul" value="10.5">
+            <span class="unit">kV</span>
+        </div>
+        <div class="input-group">
+            <label>接线方式:</label>
+            <input type="number" name="Clock" value="11" placeholder="11">
+            <span class="unit">点</span>
+        </div>
+        <div class="input-group">
+            <label>高CT比值:</label>
+            <input type="number" step="any" name="CTh" value="160">
+            <span class="unit"></span>
+        </div>
+        <div class="input-group">
+            <label>低CT比值:</label>
+            <input type="number" step="any" name="CTl" value="800">
+            <span class="unit"></span>
+        </div>
+
+        <div class="section-title">定值</div>
+        <div class="input-group">
+            <label>启动值:</label>
+            <input type="number" step="any" name="Iqd" value="0.5">
+            <span class="unit">Ie</span>
+        </div>
+        <div class="input-group">
+            <label>差速断:</label>
+            <input type="number" step="any" name="Isd" value="7">
+            <span class="unit">Ie</span>
+        </div>
+
+        <div class="section-title">动作特性</div>
+        <div class="input-group">
+            <label>保护厂家:</label>
+            <select id="manufacturer" class="text-[#07c160] font-bold">
+                <!-- JS Inject -->
+            </select>
+        </div>
+        <div id="slopes-container"></div>
+
+        <div class="input-group">
+            <label>校验方法:</label>
+            <select name="TestMethod" class="text-blue-600 font-bold">
+                <option value="3phase">三相法</option>
+                <option value="1phase">单相法</option>
+            </select>
+        </div>
+
+        <div class="section-title">人工计算点(可不输)</div>
+        <div class="input-group">
+            <label>横坐标:</label>
+            <input type="number" step="any" name="RGZS" value="0">
+            <span class="unit">Ie</span>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="calculate()">计算</button>
+    </form>
+
+    <div id="results" class="hidden result-container">
+        <div id="summaryInfo" class="mb-4 p-3 bg-blue-50 rounded text-sm text-blue-800"></div>
+        <div id="resultContent"></div>
+    </div>
+
+    <script>
+        const array = ["四方", "南瑞继保", "南瑞继保高值", "深瑞", "南自", "南瑞科技", "其它"];
+        const array_k = [
+            [.2, .5, .7, .6, 5],
+            [.2, .5, .75, .5, 6],
+            [0, .6, .6, .8, 6],
+            [0, .5, .75, 1, 6],
+            [0, .5, .7, .8, 3],
+            [0, .5, .8, .5, 5],
+            [.2, .5, .7, .6, 5]
+        ];
+
+        let currentIndex = 0;
+        const mSelect = document.getElementById('manufacturer');
+        array.forEach((name, index) => {
+            const opt = document.createElement('option');
+            opt.value = index; opt.textContent = name;
+            mSelect.appendChild(opt);
+        });
+
+        function renderSlopes(index) {
+            const container = document.getElementById('slopes-container');
+            const k = array_k[index];
+            let html = `<div class="input-group"><label>一段斜率:</label><input type="number" step="any" name="K1" value="${k[0]}"><span class="unit"></span></div>
+                        <div class="input-group"><label>二段斜率:</label><input type="number" step="any" name="K2" value="${k[1]}"><span class="unit"></span></div>`;
+            if (index != 2) {
+                html += `<div class="input-group"><label>三段斜率:</label><input type="number" step="any" name="K3" value="${k[2]}"><span class="unit"></span></div>`;
+            }
+            html += `<div class="input-group"><label>拐点1:</label><input type="number" step="any" name="Z1" value="${k[3]}"><span class="unit">Ie</span></div>`;
+            if (index != 2) {
+                html += `<div class="input-group"><label>拐点2:</label><input type="number" step="any" name="Z2" value="${k[4]}"><span class="unit">Ie</span></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        mSelect.addEventListener('change', (e) => {
+            currentIndex = parseInt(e.target.value);
+            renderSlopes(currentIndex);
+        });
+
+        function createTableHtml(title, highCur, lowCur, clock, method) {
+            const isReverse = parseFloat(lowCur) < 0;
+            const hVal = Math.abs(parseFloat(highCur));
+            const lVal = Math.abs(parseFloat(lowCur));
+            const isNari = (currentIndex === 1 || currentIndex === 2);
+
+            let rows = "";
+            if (method === "3phase") {
+                const hAngles = [0, 240, 120];
+                const lAngles = (clock == "11") ? (isReverse ? [30, 270, 150] : [210, 90, 330]) : (isReverse ? [0, 240, 120] : [180, 60, 300]);
+                rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>${hAngles[0]}</td><td>${lVal.toFixed(3)}</td><td>${lAngles[0]}</td></tr>
+                        <tr><td>B</td><td>${hVal.toFixed(3)}</td><td>${hAngles[1]}</td><td>${lVal.toFixed(3)}</td><td>${lAngles[1]}</td></tr>
+                        <tr><td>C</td><td>${hVal.toFixed(3)}</td><td>${hAngles[2]}</td><td>${lVal.toFixed(3)}</td><td>${lAngles[2]}</td></tr>`;
+            } else {
+                if (isNari) {
+                    const lbVal = Math.sqrt(3) * lVal;
+                    rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>180</td><td>0.000</td><td>0</td></tr>
+                            <tr><td>B</td><td>0.000</td><td>0</td><td>${lbVal.toFixed(3)}</td><td>0</td></tr>
+                            <tr><td>C</td><td>${hVal.toFixed(3)}</td><td>0</td><td>0.000</td><td>0</td></tr>`;
+                } else {
+                    const haVal = Math.sqrt(3) * hVal;
+                    rows = `<tr><td>A</td><td>${haVal.toFixed(3)}</td><td>0</td><td>${lVal.toFixed(3)}</td><td>180</td></tr>
+                            <tr><td>B</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>
+                            <tr><td>C</td><td>0.000</td><td>0</td><td>${lVal.toFixed(3)}</td><td>0</td></tr>`;
+                }
+            }
+
+            let hint = title.includes("平衡") ? "装置内差流应接近 0。" :
+                (!isReverse ? "临界点：稍微 <span class='text-blue-600 font-bold'>↓降低↓</span> 低侧电流动作， <span class='text-red-600 font-bold'>↑增加↑</span> 不动作。" :
+                    "临界点：稍微 <span class='text-red-600 font-bold'>↑增加↑</span> 低侧电流动作， <span class='text-blue-600 font-bold'>↓降低↓</span> 不动作。");
+
+            return `<div class="result-card">
+                        <div class="result-card-title">${title}</div>
+                        <table>
+                            <thead>
+                                <tr><th>相别</th><th colspan="2">高压侧</th><th colspan="2">低压侧</th></tr>
+                                <tr><th>-</th><th>电流(A)</th><th>角度(°)</th><th>电流(A)</th><th>角度(°)</th></tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                        <div class="hint-text text-[11px]">${hint}</div>
+                    </div>`;
+        }
+
+        function calculate() {
+            const form = document.getElementById('calcForm');
+            const fd = new FormData(form);
+            const data = Object.fromEntries(fd.entries());
+
+            const S = parseFloat(data.S) || 50;
+            const Uh = parseFloat(data.Uh) || 110;
+            const Ul = parseFloat(data.Ul) || 10.5;
+            const CTh = parseFloat(data.CTh) || 160;
+            const CTl = parseFloat(data.CTl) || 800;
+            const Clock = data.Clock;
+            const TestMethod = data.TestMethod;
+            let Iqd = parseFloat(data.Iqd) || 0.5;
+            if (currentIndex == 2) Iqd = 1.2;
+
+            const Isd = parseFloat(data.Isd) || 7;
+            const K1 = parseFloat(data.K1) || 0.2;
+            const K2 = parseFloat(data.K2) || 0.5;
+            const K3 = parseFloat(data.K3) || 0.7;
+            const Z1 = parseFloat(data.Z1) || 0.6;
+            const Z2 = parseFloat(data.Z2) || 5;
+            const RGZS = parseFloat(data.RGZS) || 0;
+
+            const Ieh = (1000 * S / (Math.sqrt(3) * Uh * CTh)).toFixed(3);
+            const Iel = (1000 * S / (Math.sqrt(3) * Ul * CTl)).toFixed(3);
+            const IsdH = (1.05 * Isd * Ieh).toFixed(3);
+            const IsdL = (0.95 * Isd * Ieh).toFixed(3);
+            const y = (Uh * CTh / (Ul * CTl)).toFixed(3);
+            const K_val = (1 / y).toFixed(3);
+
+            const isManual = RGZS > 0;
+            let html = "";
+
+            if (!isManual && currentIndex != 2) {
+                html += createTableHtml("1. 平衡校验", Ieh, Iel, Clock, TestMethod);
+            }
+
+            if (!isManual || (isManual && RGZS <= Z1)) {
+                if (currentIndex != 2) {
+                    let X1 = isManual ? RGZS : (Math.random() * 0.1 + (Z1 - 0.1)).toFixed(1);
+                    const IhX1 = ((2 * X1 + Iqd + K1 * X1) * Ieh / 2).toFixed(3);
+                    const IlX1 = ((2 * X1 - Iqd - K1 * X1) * Ieh / 2 * y).toFixed(3);
+                    html += createTableHtml(`2. 第一段校验 (Ir=${X1}Ie)`, IhX1, IlX1, Clock, TestMethod);
+                }
+            }
+
+            if (!isManual || (isManual && RGZS > Z1 && RGZS <= Z2)) {
+                let X2 = isManual ? RGZS : (Math.random() * (Z2 - Z1 - 0.4) + Z1 + 0.4).toFixed(1);
+                const IhX2 = ((2 * X2 + Iqd + K1 * Z1 + (X2 - Z1) * K2) * Ieh / 2).toFixed(3);
+                const IlX2 = ((2 * X2 - Iqd - K1 * Z1 - (X2 - Z1) * K2) * Ieh / 2 * y).toFixed(3);
+                html += createTableHtml(`3. ${currentIndex == 2 ? "" : "第二段"}校验 (Ir=${X2}Ie)`, IhX2, IlX2, Clock, TestMethod);
+            }
+
+            if (!isManual || (isManual && RGZS > Z2)) {
+                if (currentIndex != 2) {
+                    let X3 = isManual ? RGZS : (Math.random() * (9 - Z2 - 0.5) + Z2 + 0.5).toFixed(1);
+                    const IhX3 = ((2 * X3 + Iqd + K1 * Z1 + (Z2 - Z1) * K2 + (X3 - Z2) * K3) * Ieh / 2).toFixed(3);
+                    const IlX3 = ((2 * X3 - Iqd - K1 * Z1 - (Z2 - Z1) * K2 - (X3 - Z2) * K3) * Ieh / 2 * y).toFixed(3);
+                    html += createTableHtml(`4. 第三段校验 (Ir=${X3}Ie)`, IhX3, IlX3, Clock, TestMethod);
+                }
+            }
+
+            if (currentIndex == 2) html += `<div class="p-3 bg-orange-50 text-orange-700 text-xs rounded mb-4">高值比率差动不受CT断线闭锁...</div>`;
+
+            if (!isManual && currentIndex != 2) {
+                html += `<div class="result-card"><div class="result-card-title">5. 差速断校验 (高侧三相)</div><div class="text-sm space-y-1 p-2">
+                            <p>动作 (1.05倍): <span class="font-bold text-red-600">${IsdH} A</span></p>
+                            <p>不动作 (0.95倍): <span class="font-bold text-green-600">${IsdL} A</span></p>
+                         </div></div>`;
+            }
+
+            document.getElementById('summaryInfo').innerHTML = `基准 Ie = ${Ieh} A | 系数 K = ${K_val}`;
+            document.getElementById('resultContent').innerHTML = html;
+            document.getElementById('results').classList.remove('hidden');
+            window.scrollTo({ top: document.getElementById('results').offsetTop - 80, behavior: 'smooth' });
+        }
+
+        renderSlopes(0);
+    </script>
+</body>
+
+</html>

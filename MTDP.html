@@ -304,13 +304,13 @@
             let Iqd = parseFloat(data.Iqd) || 0.5;
             if (currentIndex == 2) Iqd = 1.2;
 
-            const Isd = parseFloat(data.Isd) || 7;
-            const K1 = parseFloat(data.K1) || 0.2;
-            const K2 = parseFloat(data.K2) || 0.5;
-            const K3 = parseFloat(data.K3) || 0.7;
-            const Z1 = parseFloat(data.Z1) || 0.6;
-            const Z2 = parseFloat(data.Z2) || 5;
-            const RGZS = parseFloat(data.RGZS) || 0;
+            const Isd = parseFloat(data.Isd ?? 7);
+            const K1 = parseFloat(data.K1 ?? 0.2);
+            const K2 = parseFloat(data.K2 ?? 0.5);
+            const K3 = parseFloat(data.K3 ?? 0.7);
+            const Z1 = parseFloat(data.Z1 ?? 0.6);
+            const Z2 = parseFloat(data.Z2 ?? 5);
+            const RGZS = parseFloat(data.RGZS ?? 0);
 
             const Ieh = (1000 * S / (Math.sqrt(3) * Uh * CTh)).toFixed(3);
             const Iel = (1000 * S / (Math.sqrt(3) * Ul * CTl)).toFixed(3);

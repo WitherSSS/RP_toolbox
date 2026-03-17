@@ -147,7 +147,10 @@
         </div>
         <div class="input-group">
             <label>接线方式:</label>
-            <input type="number" name="Clock" value="11" placeholder="11">
+            <select name="Clock" class="text-gray-700">
+                <option value="11" selected>11 (Yd11)</option>
+                <option value="0">0 (Yy0)</option>
+            </select>
             <span class="unit">点</span>
         </div>
         <div class="input-group">
@@ -258,16 +261,22 @@
                         <tr><td>B</td><td>${hVal.toFixed(3)}</td><td>${hAngles[1]}</td><td>${lVal.toFixed(3)}</td><td>${lAngles[1]}</td></tr>
                         <tr><td>C</td><td>${hVal.toFixed(3)}</td><td>${hAngles[2]}</td><td>${lVal.toFixed(3)}</td><td>${lAngles[2]}</td></tr>`;
             } else {
-                if (isNari) {
-                    const lbVal = Math.sqrt(3) * lVal;
-                    rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>180</td><td>${lbVal.toFixed(3)}</td><td>0</td></tr>
+                if (clock == "0") {
+                    rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>0</td><td>${lVal.toFixed(3)}</td><td>180</td></tr>
                             <tr><td>B</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>
-                            <tr><td>C</td><td>${hVal.toFixed(3)}</td><td>0</td><td>0.000</td><td>0</td></tr>`;
+                            <tr><td>C</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>`;
                 } else {
-                    const haVal = Math.sqrt(3) * hVal;
-                    rows = `<tr><td>A</td><td>${haVal.toFixed(3)}</td><td>0</td><td>${lVal.toFixed(3)}</td><td>180</td></tr>
-                            <tr><td>B</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>
-                            <tr><td>C</td><td>0.000</td><td>0</td><td>${lVal.toFixed(3)}</td><td>0</td></tr>`;
+                    if (isNari) {
+                        const lbVal = Math.sqrt(3) * lVal;
+                        rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>180</td><td>${lbVal.toFixed(3)}</td><td>0</td></tr>
+                                <tr><td>B</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>
+                                <tr><td>C</td><td>${hVal.toFixed(3)}</td><td>0</td><td>0.000</td><td>0</td></tr>`;
+                    } else {
+                        const haVal = Math.sqrt(3) * hVal;
+                        rows = `<tr><td>A</td><td>${haVal.toFixed(3)}</td><td>0</td><td>${lVal.toFixed(3)}</td><td>180</td></tr>
+                                <tr><td>B</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>
+                                <tr><td>C</td><td>0.000</td><td>0</td><td>${lVal.toFixed(3)}</td><td>0</td></tr>`;
+                    }
                 }
             }
 

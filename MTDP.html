@@ -177,7 +177,6 @@
         <div class="input-group">
             <label>保护厂家:</label>
             <select id="manufacturer" class="text-[#07c160] font-bold">
-                <!-- JS Inject -->
             </select>
         </div>
         <div id="slopes-container"></div>
@@ -261,8 +260,8 @@
             } else {
                 if (isNari) {
                     const lbVal = Math.sqrt(3) * lVal;
-                    rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>180</td><td>0.000</td><td>0</td></tr>
-                            <tr><td>B</td><td>0.000</td><td>0</td><td>${lbVal.toFixed(3)}</td><td>0</td></tr>
+                    rows = `<tr><td>A</td><td>${hVal.toFixed(3)}</td><td>180</td><td>${lbVal.toFixed(3)}</td><td>0</td></tr>
+                            <tr><td>B</td><td>0.000</td><td>0</td><td>0.000</td><td>0</td></tr>
                             <tr><td>C</td><td>${hVal.toFixed(3)}</td><td>0</td><td>0.000</td><td>0</td></tr>`;
                 } else {
                     const haVal = Math.sqrt(3) * hVal;

@@ -224,7 +224,7 @@
     <div id="results" class="hidden result-container">
         <div class="hint-box">
             <strong>校验说明:</strong><br>
-            1. 使用状态序列，一态设为：电压57.7V, 角度0°/240°/120°; 电流0A; 时间15s (用于PT断线复归)。<br>
+            1. 使用状态序列，一态设为：电压57.700V, 角度0.000°/240.000°/120.000°; 电流0.000A; 时间15s (用于PT断线复归)。<br>
             2. 下方模拟 <strong>A相接地</strong> 或 <strong>BC相间短路</strong>。假设偏移角均为0。<br>
             3. 反向故障校验：只需将三态的电流方向反向（增加180°）即可。
         </div>
@@ -264,8 +264,8 @@
             ];
 
             groundingPoints.forEach(p => {
-                const U_no = ((1 + K) * p.val * I * 1.05).toFixed(1);
-                const U_act = ((1 + K) * p.val * I * 0.95).toFixed(1);
+                const U_no = ((1 + K) * p.val * I * 1.05).toFixed(3);
+                const U_act = ((1 + K) * p.val * I * 0.95).toFixed(3);
                 resContainer.innerHTML += generateGroundCard(p.name, U_no, U_act, I, A0);
             });
 
@@ -280,12 +280,12 @@
             phasePoints.forEach(p => {
                 const calcPhase = (factor) => {
                     const IZ = I * p.val * factor;
-                    const Ubmag = Math.sqrt(f * f + IZ * IZ).toFixed(1);
+                    const Ubmag = Math.sqrt(f * f + IZ * IZ).toFixed(3);
                     const angleOff = (180 * Math.atan(IZ / f) / Math.PI);
                     return {
                         mag: Ubmag,
-                        angleB: (180 + angleOff).toFixed(1),
-                        angleC: (180 - angleOff).toFixed(1)
+                        angleB: (180 + angleOff).toFixed(3),
+                        angleC: (180 - angleOff).toFixed(3)
                     };
                 };
 
@@ -302,6 +302,8 @@
         }
 
         function generateGroundCard(name, Uno, Uact, I, A0) {
+            const I_fmt = parseFloat(I).toFixed(3);
+            const A0_fmt = parseFloat(A0).toFixed(3);
             return `
                 <div class="result-card">
                     <div class="result-card-title">${name} (模拟A相接地)</div>
@@ -313,9 +315,9 @@
                                     <tr><th>相别</th><th>电压(V)</th><th>角度(°)</th><th>电流(A)</th><th>角度(°)</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>UA/IA</td><td class="font-bold text-blue-600">${Uno}</td><td>0</td><td class="font-bold">${I}</td><td>-${A0}</td></tr>
-                                    <tr><td>UB/IB</td><td>57.7</td><td>240</td><td>0</td><td>0</td></tr>
-                                    <tr><td>UC/IC</td><td>57.7</td><td>120</td><td>0</td><td>0</td></tr>
+                                    <tr><td>UA/IA</td><td class="font-bold text-blue-600">${Uno}</td><td>0.000</td><td class="font-bold">${I_fmt}</td><td>-${A0_fmt}</td></tr>
+                                    <tr><td>UB/IB</td><td>57.700</td><td>240.000</td><td>0.000</td><td>0.000</td></tr>
+                                    <tr><td>UC/IC</td><td>57.700</td><td>120.000</td><td>0.000</td><td>0.000</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -326,9 +328,9 @@
                                     <tr><th>相别</th><th>电压(V)</th><th>角度(°)</th><th>电流(A)</th><th>角度(°)</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>UA/IA</td><td class="font-bold text-green-600">${Uact}</td><td>0</td><td class="font-bold">${I}</td><td>-${A0}</td></tr>
-                                    <tr><td>UB/IB</td><td>57.7</td><td>240</td><td>0</td><td>0</td></tr>
-                                    <tr><td>UC/IC</td><td>57.7</td><td>120</td><td>0</td><td>0</td></tr>
+                                    <tr><td>UA/IA</td><td class="font-bold text-green-600">${Uact}</td><td>0.000</td><td class="font-bold">${I_fmt}</td><td>-${A0_fmt}</td></tr>
+                                    <tr><td>UB/IB</td><td>57.700</td><td>240.000</td><td>0.000</td><td>0.000</td></tr>
+                                    <tr><td>UC/IC</td><td>57.700</td><td>120.000</td><td>0.000</td><td>0.000</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -338,8 +340,9 @@
         }
 
         function generatePhaseCard(name, pNo, pAct, I, A1) {
-            const angleB = (270 - A1).toFixed(1);
-            const angleC = (90 - A1).toFixed(1);
+            const angleB = (270 - A1).toFixed(3);
+            const angleC = (90 - A1).toFixed(3);
+            const I_fmt = parseFloat(I).toFixed(3);
             return `
                 <div class="result-card">
                     <div class="result-card-title">${name} (模拟BC相间短路)</div>
@@ -351,9 +354,9 @@
                                     <tr><th>相别</th><th>电压(V)</th><th>角度(°)</th><th>电流(A)</th><th>角度(°)</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>UA/IA</td><td>57.7</td><td>0</td><td>0</td><td>0</td></tr>
-                                    <tr><td>UB/IB</td><td class="font-bold text-blue-600">${pNo.mag}</td><td>${pNo.angleB}</td><td class="font-bold">${I}</td><td>${angleB}</td></tr>
-                                    <tr><td>UC/IC</td><td class="font-bold text-blue-600">${pNo.mag}</td><td>${pNo.angleC}</td><td class="font-bold">${I}</td><td>${angleC}</td></tr>
+                                    <tr><td>UA/IA</td><td>57.700</td><td>0.000</td><td>0.000</td><td>0.000</td></tr>
+                                    <tr><td>UB/IB</td><td class="font-bold text-blue-600">${pNo.mag}</td><td>${pNo.angleB}</td><td class="font-bold">${I_fmt}</td><td>${angleB}</td></tr>
+                                    <tr><td>UC/IC</td><td class="font-bold text-blue-600">${pNo.mag}</td><td>${pNo.angleC}</td><td class="font-bold">${I_fmt}</td><td>${angleC}</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -364,9 +367,9 @@
                                     <tr><th>相别</th><th>电压(V)</th><th>角度(°)</th><th>电流(A)</th><th>角度(°)</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>UA/IA</td><td>57.7</td><td>0</td><td>0</td><td>0</td></tr>
-                                    <tr><td>UB/IB</td><td class="font-bold text-green-600">${pAct.mag}</td><td>${pAct.angleB}</td><td class="font-bold">${I}</td><td>${angleB}</td></tr>
-                                    <tr><td>UC/IC</td><td class="font-bold text-green-600">${pAct.mag}</td><td>${pAct.angleC}</td><td class="font-bold">${I}</td><td>${angleC}</td></tr>
+                                    <tr><td>UA/IA</td><td>57.700</td><td>0.000</td><td>0.000</td><td>0.000</td></tr>
+                                    <tr><td>UB/IB</td><td class="font-bold text-green-600">${pAct.mag}</td><td>${pAct.angleB}</td><td class="font-bold">${I_fmt}</td><td>${angleB}</td></tr>
+                                    <tr><td>UC/IC</td><td class="font-bold text-green-600">${pAct.mag}</td><td>${pAct.angleC}</td><td class="font-bold">${I_fmt}</td><td>${angleC}</td></tr>
                                 </tbody>
                             </table>
                         </div>

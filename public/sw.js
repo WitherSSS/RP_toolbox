@@ -34,6 +34,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
+
   event.respondWith(
     fetch(event.request)
       .then(networkResponse => {
@@ -45,10 +46,13 @@ self.addEventListener('fetch', event => {
       })
       .catch(() => {
         return caches.match(event.request).then(cachedResponse => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          throw new Error('离线且无缓存');
+          if (cachedResponse) return cachedResponse;
+          const htmlUrl = event.request.url + '.html';
+          return caches.match(htmlUrl).then(htmlFallback => {
+            if (htmlFallback) return htmlFallback;
+            console.warn('离线且无缓存，请求地址:', event.request.url);
+            throw new Error('离线且无缓存');
+          });
         });
       })
   );

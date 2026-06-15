@@ -25,7 +25,7 @@ export const renderIndex = () => {
                 ${cardsHtml}
             </div>
             <div class="text-center text-xs text-gray-400 mt-10 mb-4 font-light tracking-wide">
-                v1.1.16
+                v2.0.1
             </div>
         </div>
     `;

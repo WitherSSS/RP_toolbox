@@ -4,7 +4,6 @@ export async function onRequestGet(context) {
     const data = await PASSWORD_KV.get("vault_data");
     return new Response(data || JSON.stringify([]), { headers: { "Content-Type": "application/json" } });
 }
-
 export async function onRequestPost(context) {
     const { PASSWORD_KV, UPLOAD_PASSWORD } = context.env;
     if (!PASSWORD_KV) return new Response(JSON.stringify({ error: "KV未绑定" }), { status: 500 });

@@ -6,9 +6,9 @@
     <title>继保工具箱</title>
     <meta name="theme-color" content="#07c160">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="继保工具箱">
+    <meta name="apple-web-app-capable" content="yes">
+    <meta name="apple-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-web-app-title" content="继保工具箱">
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/src/css/light-theme.css">
@@ -25,11 +25,44 @@
     <div id="offlineIndicator" class="hidden p-2 bg-gray-200 text-gray-600 text-center text-xs sticky top-0 z-50">
         您当前处于离线模式，部分功能可能受限
     </div>
+    
     <div id="app"></div>
+    
     <div id="installBanner">
-        <span class="text-sm font-medium">安装到主屏幕</span>
+        <span class="text-sm font-medium">安装到主屏幕（可完全离线使用）</span>
         <button id="installBtn" class="bg-white text-[#07c160] px-4 py-1 rounded-full text-xs font-bold">安装</button>
     </div>
     <script type="module" src="/src/main.js"></script>
+    <script>
+        let deferredPrompt;
+        const banner = document.getElementById('installBanner');
+        const btn = document.getElementById('installBtn');
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const isBannerShownBefore = localStorage.getItem('pwa_banner_shown');
+
+            if (!isBannerShownBefore) {
+                banner.style.display = 'flex';
+                localStorage.setItem('pwa_banner_shown', 'true');
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 5000);
+            }
+        });
+        btn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`用户安装抉择: ${outcome}`);
+            banner.style.display = 'none';
+            deferredPrompt = null;
+        });
+        window.addEventListener('appinstalled', () => {
+            banner.style.display = 'none';
+            deferredPrompt = null;
+            console.log('🎉 继保工具箱已成功本地化安装！');
+        });
+    </script>
 </body>
 </html>

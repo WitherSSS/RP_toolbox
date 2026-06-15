@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>继保工具箱</title>
     <meta name="theme-color" content="#07c160">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="继保工具箱">
-    <link rel="manifest" id="pwa-manifest">
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/light-theme.css">
     <link rel="stylesheet" href="css/dark-theme.css">
@@ -38,19 +39,6 @@
         <button id="installBtn" class="bg-white text-[#07c160] px-4 py-1 rounded-full text-xs font-bold">安装</button>
     </div>
     <script>
-        const manifest = {
-            "name": "继保自动化工具箱",
-            "short_name": "继保工具",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#f7f7f7",
-            "theme_color": "#07c160",
-            "icons": [{ "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIyNDAiIGZpbGw9IiMwN2MxNjAiLz48cGF0aCBkPSJNMjU2IDgwTDEyMCAzMjBoODBsLTQwIDEyMEwzOTIgMTkySDMxMkwzOTIgODB6IiBmaWxsPSIjZmZmIi8+PC9zdmc+", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }]
-        };
-        const stringManifest = JSON.stringify(manifest);
-        const blobManifest = new Blob([stringManifest], { type: 'application/json' });
-        document.querySelector('#pwa-manifest').setAttribute('href', URL.createObjectURL(blobManifest));
-
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW failed', err));
         }

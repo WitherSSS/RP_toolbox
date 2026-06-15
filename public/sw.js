@@ -1,27 +1,25 @@
 const CACHE_NAME = 'rp-toolbox';
 const ASSETS = [
   './',
-  './index.html',
-  './PW.html',
-  './MTDP.html',
-  './IP.html',
-  './BDP.html',
-  './MTCI.html',
-  './VR.html',
-  './DT.html',
+  './index',
+  './PW',
+  './MTDP',
+  './IP',
+  './BDP',
+  './MTCI',
+  './VR',
+  './DT',
   './js/pw_app.js',
   './css/light-theme.css',
   './css/dark-theme.css',
   './css/tailwind.css',
 ];
-
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
   self.skipWaiting();
 });
-
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
@@ -32,7 +30,6 @@ self.addEventListener('activate', event => {
   );
   self.clients.claim();
 });
-
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.pathname.startsWith('/api/')) {
@@ -47,21 +44,15 @@ self.addEventListener('fetch', event => {
     );
   } else {
     event.respondWith(
-      (async () => {
-        let cachedRes = await caches.match(event.request);
-        const isCleanUrl = !url.pathname.split('/').pop().includes('.') && url.pathname !== '/';
-        if (!cachedRes && isCleanUrl) {
-          const htmlUrl = url.origin + url.pathname + '.html';
-          cachedRes = await caches.match(htmlUrl);
-        }
-        const fetchPromise = fetch(event.request).then(async (netRes) => {
-          const cache = await caches.open(CACHE_NAME);
-          cache.put(event.request, netRes.clone());
-          return netRes;
-        }).catch(() => {
-        });
-        return cachedRes || fetchPromise;
-      })()
+      caches.match(event.request).then(cachedRes => {
+        const fetchRes = fetch(event.request).then(netRes => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, netRes.clone());
+            return netRes;
+          });
+        }).catch(() => cachedRes);
+        return cachedRes || fetchRes;
+      })
     );
   }
-});
+}); 

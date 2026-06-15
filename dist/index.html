@@ -18,9 +18,27 @@
         .tool-card:active { background-color: #f0f0f0; transform: scale(0.98); }
         @media (min-width: 768px) { .tool-card:hover { border-color: #07c160; box-shadow: 0 4px 12px rgba(7, 193, 96, 0.1); } }
         .icon-box { width: 48px; height: 48px; background-color: #f0fff4; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 16px; color: #07c160; flex-shrink: 0; }
-        #installBanner { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #07c160; color: white; padding: 12px 20px; border-radius: 50px; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3); z-index: 1000; }
+        #installBanner { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 20px; 
+            right: 20px; 
+            background: #07c160; 
+            color: white; 
+            padding: 12px 20px; 
+            border-radius: 50px; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3); 
+            z-index: 1000; 
+            display: none !important; 
+        }
+        
+        #installBanner.show { 
+            display: flex !important; 
+        }
     </style>
-  <script type="module" crossorigin src="/assets/index.M5_widOx.js"></script>
+  <script type="module" crossorigin src="/assets/index.s26n1-2Y.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index.uFurfn8Q.css">
 </head>
 <body>
@@ -30,7 +48,7 @@
     
     <div id="app"></div>
     
-    <div id="installBanner" class="hidden">
+    <div id="installBanner">
         <span class="text-sm font-medium">安装到主屏幕（可离线使用）</span>
         <div class="flex items-center gap-3">
             <button id="cancelBtn" class="text-white/80 hover:text-white text-xs px-2 py-1 font-medium transition-colors">取消</button>
@@ -39,14 +57,13 @@
     </div>
     <script>
         let deferredPrompt;
-        let autoHideTimer;
+        let autoHideTimer; 
         const banner = document.getElementById('installBanner');
         const installBtn = document.getElementById('installBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const hideBanner = () => {
             if (banner) {
-                banner.classList.add('hidden');
-                banner.classList.remove('flex');
+                banner.classList.remove('show');
             }
             if (autoHideTimer) {
                 clearTimeout(autoHideTimer);
@@ -57,8 +74,9 @@
             deferredPrompt = e;
             const isBannerShownBefore = localStorage.getItem('pwa_banner_shown');
             if (!isBannerShownBefore) {
-                banner.classList.remove('hidden');
-                banner.classList.add('flex');
+                if (banner) {
+                    banner.classList.add('show');
+                }
                 localStorage.setItem('pwa_banner_shown', 'true');
                 autoHideTimer = setTimeout(() => {
                     hideBanner();

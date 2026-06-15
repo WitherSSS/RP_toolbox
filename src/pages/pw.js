@@ -181,20 +181,22 @@ function toggleAccordion(el) {
 function handleSearch() { 
     renderRecords(document.getElementById('searchInput').value); 
 }
-function openModal(record = null) {
+function openModal(id = null) {
     const modal = document.getElementById('formModal');
     document.getElementById('recordForm').reset();
     document.getElementById('adminPassword').value = sessionStorage.getItem('admin_pass') || '';
-    if (id) {
+    if (id && typeof id === 'string') { 
         const record = appState.rawRecords.find(r => r.id === id);
-        if (!record) return;
-        document.getElementById('modalTitle').textContent = "修改记录详情";
-        document.getElementById('recordId').value = record.id;
-        document.getElementById('formVendor').value = record.vendor;
-        document.getElementById('formPassword').value = record.password;
-        document.getElementById('formModel').value = record.model || '';
-        document.getElementById('formRemark').value = record.remark || '';
-        document.getElementById('deleteBtn').classList.remove('hidden');
+        
+        if (record) {
+            document.getElementById('modalTitle').textContent = "修改记录详情";
+            document.getElementById('recordId').value = record.id;
+            document.getElementById('formVendor').value = record.vendor;
+            document.getElementById('formPassword').value = record.password;
+            document.getElementById('formModel').value = record.model || '';
+            document.getElementById('formRemark').value = record.remark || '';
+            document.getElementById('deleteBtn').classList.remove('hidden');
+        }
     } else {
         document.getElementById('modalTitle').textContent = "新增密码记录";
         document.getElementById('recordId').value = '';

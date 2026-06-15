@@ -33,28 +33,23 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          const resClone = response.clone();
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
+  event.respondWith(
+    fetch(event.request)
+      .then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200) {
+          const resClone = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
-          return response;
-        })
-        .catch(() => caches.match(event.request))
-    );
-  } else {
-    event.respondWith(
-      caches.match(event.request).then(cachedRes => {
-        const fetchRes = fetch(event.request).then(netRes => {
-          return caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, netRes.clone());
-            return netRes;
-          });
-        }).catch(() => cachedRes);
-        return cachedRes || fetchRes;
+        }
+        return networkResponse;
       })
-    );
-  }
+      .catch(() => {
+        return caches.match(event.request).then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          throw new Error('离线且无缓存');
+        });
+      })
+  );
 });

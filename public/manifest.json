@@ -1,6 +1,6 @@
 {
-  "name": "继保自动化工具箱",
-  "short_name": "继保工具",
+  "name": "继电保护自动化工具箱",
+  "short_name": "继保工具箱",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f7f7f7",

@@ -12,6 +12,7 @@ const ASSETS = [
   './js/pw_app.js',
   './css/light-theme.css',
   './css/dark-theme.css',
+  './css/tailwind.css',
 ];
 
 self.addEventListener('install', event => {

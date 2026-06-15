@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>继保工具箱</title>
+    <meta name="theme-color" content="#07c160">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="继保工具箱">
+    <link rel="manifest" href="/manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/src/css/light-theme.css">
+    <link rel="stylesheet" href="/src/css/dark-theme.css">
+    <style>
+        .tool-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s; display: flex; align-items: center; text-decoration: none; border: 1px solid transparent; }
+        .tool-card:active { background-color: #f0f0f0; transform: scale(0.98); }
+        @media (min-width: 768px) { .tool-card:hover { border-color: #07c160; box-shadow: 0 4px 12px rgba(7, 193, 96, 0.1); } }
+        .icon-box { width: 48px; height: 48px; background-color: #f0fff4; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 16px; color: #07c160; flex-shrink: 0; }
+        #installBanner { display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #07c160; color: white; padding: 12px 20px; border-radius: 50px; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3); z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div id="offlineIndicator" class="hidden p-2 bg-gray-200 text-gray-600 text-center text-xs sticky top-0 z-50">
+        您当前处于离线模式，部分功能可能受限
+    </div>
+    <div id="app"></div>
+    <div id="installBanner">
+        <span class="text-sm font-medium">安装到主屏幕</span>
+        <button id="installBtn" class="bg-white text-[#07c160] px-4 py-1 rounded-full text-xs font-bold">安装</button>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

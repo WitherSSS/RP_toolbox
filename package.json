@@ -1,0 +1,25 @@
+{
+  "name": "rp_toolbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vite.config.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WitherSSS/RP_toolbox.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/WitherSSS/RP_toolbox/issues"
+  },
+  "homepage": "https://github.com/WitherSSS/RP_toolbox#readme",
+  "devDependencies": {
+    "vite": "^8.0.16"
+  }
+}

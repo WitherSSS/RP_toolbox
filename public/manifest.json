@@ -1,10 +1,11 @@
 {
-  "name": "继电保护自动化工具箱",
   "short_name": "继保工具箱",
-  "start_url": "./index.html",
+  "name": "继电保护试验专业工具箱",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f7f7",
+  "background_color": "#ffffff",
   "theme_color": "#07c160",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIyNDAiIGZpbGw9IiMwN2MxNjAiLz48cGF0aCBkPSJNMjU2IDgwTDEyMCAzMjBoODBsLTQwIDEyMEwzOTIgMTkySDMxMkwzOTIgODB6IiBmaWxsPSIjZmZmIi8+PC9zdmc+",

@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>继保工具箱</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIyNDAiIGZpbGw9IiMwN2MxNjAiLz48cGF0aCBkPSJNMjU2IDgwTDEyMCAzMjBoODBsLTQwIDEyMEwzOTIgMTkySDMxMkwzOTIgODB6IiBmaWxsPSIjZmZmIi8+PC9zdmc+">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIyNDAiIGZpbGw9IiMwN2MxNjAiLz48cGF0aCBkPSJNMjU2IDgwTDEyMCAzMjBoODBsLTQwIDEyMEwzOTIgMTkySDMxMkwzOTIgODB6IiBmaWxsPSIjZmZmIi8+PC9zdmc+">
     <meta name="theme-color" content="#07c160">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-web-app-capable" content="yes">
-    <meta name="apple-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-web-app-title" content="继保工具箱">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="继保工具箱">
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/src/css/light-theme.css">
@@ -18,7 +20,7 @@
         .tool-card:active { background-color: #f0f0f0; transform: scale(0.98); }
         @media (min-width: 768px) { .tool-card:hover { border-color: #07c160; box-shadow: 0 4px 12px rgba(7, 193, 96, 0.1); } }
         .icon-box { width: 48px; height: 48px; background-color: #f0fff4; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 16px; color: #07c160; flex-shrink: 0; }
-        #installBanner { display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #07c160; color: white; padding: 12px 20px; border-radius: 50px; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3); z-index: 1000; }
+        #installBanner { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #07c160; color: white; padding: 12px 20px; border-radius: 50px; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(7, 193, 96, 0.3); z-index: 1000; }
     </style>
 </head>
 <body>
@@ -28,38 +30,57 @@
     
     <div id="app"></div>
     
-    <div id="installBanner">
-        <span class="text-sm font-medium">安装到主屏幕（可完全离线使用）</span>
-        <button id="installBtn" class="bg-white text-[#07c160] px-4 py-1 rounded-full text-xs font-bold">安装</button>
+    <div id="installBanner" class="hidden">
+        <span class="text-sm font-medium">安装到主屏幕（可离线使用）</span>
+        <div class="flex items-center gap-3">
+            <button id="cancelBtn" class="text-white/80 hover:text-white text-xs px-2 py-1 font-medium transition-colors">取消</button>
+            <button id="installBtn" class="bg-white text-[#07c160] px-4 py-1 rounded-full text-xs font-bold shadow-sm active:scale-95 transition-transform">安装</button>
+        </div>
     </div>
     <script type="module" src="/src/main.js"></script>
     <script>
         let deferredPrompt;
+        let autoHideTimer;
         const banner = document.getElementById('installBanner');
-        const btn = document.getElementById('installBtn');
+        const installBtn = document.getElementById('installBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const hideBanner = () => {
+            if (banner) {
+                banner.classList.add('hidden');
+                banner.classList.remove('flex');
+            }
+            if (autoHideTimer) {
+                clearTimeout(autoHideTimer);
+            }
+        };
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
             const isBannerShownBefore = localStorage.getItem('pwa_banner_shown');
-
             if (!isBannerShownBefore) {
-                banner.style.display = 'flex';
+                banner.classList.remove('hidden');
+                banner.classList.add('flex');
                 localStorage.setItem('pwa_banner_shown', 'true');
-                setTimeout(() => {
-                    banner.style.display = 'none';
+                autoHideTimer = setTimeout(() => {
+                    hideBanner();
                 }, 5000);
             }
         });
-        btn.addEventListener('click', async () => {
+        installBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
+            
             const { outcome } = await deferredPrompt.userChoice;
             console.log(`用户安装抉择: ${outcome}`);
-            banner.style.display = 'none';
+            
+            hideBanner();
             deferredPrompt = null;
         });
+        cancelBtn.addEventListener('click', () => {
+            hideBanner();
+        });
         window.addEventListener('appinstalled', () => {
-            banner.style.display = 'none';
+            hideBanner();
             deferredPrompt = null;
             console.log('🎉 继保工具箱已成功本地化安装！');
         });

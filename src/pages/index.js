@@ -24,9 +24,6 @@ export const renderIndex = () => {
             <div id="toolList" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 ${cardsHtml}
             </div>
-            <div class="text-center text-xs text-gray-400 mt-10 mb-4 font-light tracking-wide">
-                v2.0.1
-            </div>
         </div>
     `;
 };
@@ -34,3 +31,8 @@ export const initIndex = () => {
     
     console.log("🚀 导航首页装载成功");
 };
+
+const footer = document.createElement('footer');
+footer.className = "text-center text-xs text-gray-400 py-4";
+footer.innerHTML = `v${__APP_VERSION__}`;
+document.body.appendChild(footer);

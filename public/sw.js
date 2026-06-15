@@ -9,7 +9,9 @@ const ASSETS = [
   './MTCI.html',
   './VR.html',
   './DT.html',
-  './js/pw_app.js'
+  './js/pw_app.js',
+  './css/light-theme.css',
+  './css/dark-theme.css',
 ];
 
 self.addEventListener('install', event => {

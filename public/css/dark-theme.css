@@ -1,0 +1,27 @@
+/* css/dark-theme.css */
+@media (prefers-color-scheme: dark) {
+    body { background-color: #121212 !important; color: #e0e0e0 !important; }
+    .bg-white, .tool-card, .input-area, .result-card, .result-box, .bg-slate-50, .bg-slate-100, .bg-gray-50, .bg-gray-100, .input-group, .highlight-box { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }
+    .text-gray-800, .text-gray-700, .text-gray-600, .text-slate-800, .text-slate-900, .text-slate-700,
+    .input-group label, .section-title, .result-card-title, .data-label, .data-value { color: #e0e0e0 !important; }
+    .text-gray-500, .text-gray-400, .text-slate-500, .text-slate-400, .input-group .unit { color: #aaa !important; }
+    border, .border-slate-100, .border-slate-50, .border-slate-200, .border-gray-100, .border-gray-200, .border-b, .border-t, .border-l, .border-r { border-color: #333 !important; }
+    input, select, textarea { color: #fff !important; background-color: #2a2a2a !important; border-color: #444 !important; }
+    .input-group input, .input-group select { background-color: transparent !important; }
+    .input-group, .data-row { border-bottom-color: #333 !important; }
+    th { background-color: #2a2a2a !important; color: #ddd !important; border-color: #444 !important; }
+    td { border-color: #444 !important; }
+    .hint-box, .hint-text { background-color: #2a2410 !important; color: #d4b85c !important; border-color: #443818 !important;}
+    .bg-blue-50, .bg-red-50, .bg-orange-50, .bg-blue-50\/30, .bg-blue-50\/70 { background-color: #1a202c !important; color: #07c160 !important; border-color: #143621 !important;}
+    .icon-box { background-color: #143621 !important; color: #07c160 !important; }
+    #header, header { background-color: #1e1e1e !important; border-bottom: 1px solid #333 !important; }
+    .alpha-sidebar { background-color: rgba(30,30,30,0.9) !important; border-color: #333 !important; }
+    .accordion-content { background-color: #1e1e1e !important; }
+    .bg-\[\#07c160\] { background-color: #07c160 !important; }
+    .text-\[\#07c160\] { color: #07c160 !important; }
+    .text-blue-600 { color: #07c160 !important; }
+    #reverseSection { background-color: #1e1e1e !important; border-color: #333 !important; }
+    .badge-no-action { background-color: #1a202c !important; color: #63b3ed !important; border: 1px solid #2b6cb0; }
+    .badge-action { background-color: #143621 !important; color: #48bb78 !important; border: 1px solid #2f855a; }
+    .chart-wrapper { background: #222 !important;}
+}

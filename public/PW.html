@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>设备密码库 - 继保工具箱</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/dark-theme.css">
     <style>
         .accordion-content { transition: max-height 0.25s ease-out, opacity 0.2s ease-out; max-height: 0; opacity: 0; overflow: hidden; }
         .accordion-content.open { opacity: 1; }
@@ -12,29 +13,6 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .alpha-sidebar { user-select: none; touch-action: none; }
     </style>
-
-<style>
-    @media (prefers-color-scheme: dark) {
-        body { background-color: #121212; color: #e0e0e0; }
-        .bg-white, .tool-card, .input-area, .result-card, .result-box, .bg-slate-50, .bg-slate-100, .bg-gray-50, .bg-gray-100 { background-color: #1e1e1e !important; color: #e0e0e0 !important; border-color: #333 !important; }
-        .text-gray-800, .text-gray-700, .text-gray-600, .text-slate-800, .text-slate-900, .text-slate-700 { color: #e0e0e0 !important; }
-        .text-gray-500, .text-gray-400, .text-slate-500, .text-slate-400 { color: #aaa !important; }
-        border, .border-slate-100, .border-slate-50, .border-slate-200, .border-gray-100, .border-gray-200, .border-b, .border-t, .border-l, .border-r { border-color: #333 !important; }
-        input, select, textarea { color: #fff !important; background-color: #2a2a2a !important; border-color: #444 !important; }
-        .input-group, .data-row { border-bottom-color: #333 !important; }
-        th { background-color: #2a2a2a !important; color: #ddd !important; border-color: #444 !important; }
-        td { border-color: #444 !important; }
-        .hint-box, .hint-text { background-color: #2a2410 !important; color: #d4b85c !important; border-color: #443818 !important;}
-        .bg-blue-50, .bg-red-50, .bg-orange-50, .bg-blue-50\/30, .bg-blue-50\/70 { background-color: #1a202c !important; color: #07c160 !important; border-color: #143621 !important;}
-        .icon-box { background-color: #143621 !important; color: #07c160 !important; }
-        #header, header { background-color: #1e1e1e !important; border-bottom: 1px solid #333 !important; }
-        .alpha-sidebar { background-color: rgba(30,30,30,0.9) !important; border-color: #333 !important; }
-        .accordion-content { background-color: #1e1e1e !important; }
-        .bg-\[\#07c160\] { background-color: #07c160 !important; }
-        .text-\[\#07c160\] { color: #07c160 !important; }
-        .text-blue-600 { color: #07c160 !important; }
-    }
-</style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased font-sans min-h-screen flex flex-col select-none">
     <div id="appView" class="flex-1 flex flex-col max-w-2xl w-full mx-auto bg-white shadow-sm min-h-screen relative pb-20">

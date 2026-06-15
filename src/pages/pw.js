@@ -168,7 +168,7 @@ function renderRecords(filterText = "") {
             const pwList = item.password.split('\n').map(p => p.trim()).filter(Boolean);
             const mainPw = pwList[0] || '空';
             const extraCount = pwList.length - 1;
-            return `<div class="bg-white"><div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors"><div class="flex-1 min-w-0 pr-4"><div class="flex items-center space-x-2"><span class="font-semibold text-slate-800 text-base truncate">${escapeHtml(item.vendor)}</span>${item.model ? `<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md font-medium truncate max-w-[120px]">${escapeHtml(item.model)}</span>` : ''}</div></div><div class="flex items-center space-x-2"><div class="flex items-center space-x-1" onclick="event.stopPropagation();"><span class="text-xs font-mono font-bold text-slate-400 select-all bg-slate-50 px-2 py-1 rounded border border-slate-100/60 transition-all active:bg-[#f0fff4] active:text-[#07c160] max-w-[90px] truncate block">${escapeHtml(mainPw)}</span>${extraCount > 0 ? `<span class="text-[10px] text-[#07c160] bg-[#f0fff4] px-1 py-0.5 rounded font-bold">+${extraCount}</span>` : ''}</div><button onclick="event.stopPropagation(); openModal(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="text-slate-300 hover:text-[#07c160] p-1 pl-2 ml-1 border-l border-slate-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="accordion-content bg-slate-50/40"><div class="p-4 text-xs text-slate-500 border-t border-slate-50/80 space-y-2 bg-slate-50/30"><div><span class="font-medium text-slate-400 block mb-1">设备厂家:</span> <span class="text-slate-700 select-text">${escapeHtml(item.vendor)}</span></div><div><span class="font-medium text-slate-400 block mb-1.5">设备密码:</span><div class="flex flex-wrap gap-1.5">${pwList.map(p => `<div class="text-[#07c160] font-mono font-bold text-sm select-all bg-[#f0fff4] px-2.5 py-1 rounded border border-[#c6f6d5] hover:bg-[#c6f6d5] transition-colors">${escapeHtml(p)}</div>`).join('')}</div></div>${item.model ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">资产型号:</span> <span class="text-slate-700 select-text">${escapeHtml(item.model)}</span></div>` : ''}${item.remark ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">备注说明:</span> <span class="text-slate-600 select-text whitespace-pre-wrap">${escapeHtml(item.remark)}</span></div>` : ''}</div></div></div>`}).join('')}</div>`;
+            return `<div class="bg-white"><div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors"><div class="flex-1 min-w-0 pr-4"><div class="flex items-center space-x-2"><span class="font-semibold text-slate-800 text-base truncate">${escapeHtml(item.vendor)}</span>${item.model ? `<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md font-medium truncate max-w-[120px]">${escapeHtml(item.model)}</span>` : ''}</div></div><div class="flex items-center space-x-2"><div class="flex items-center space-x-1" onclick="event.stopPropagation();"><span class="text-xs font-mono font-bold text-slate-400 select-all bg-slate-50 px-2 py-1 rounded border border-slate-100/60 transition-all active:bg-[#f0fff4] active:text-[#07c160] max-w-[90px] truncate block">${escapeHtml(mainPw)}</span>${extraCount > 0 ? `<span class="text-[10px] text-[#07c160] bg-[#f0fff4] px-1 py-0.5 rounded font-bold">+${extraCount}</span>` : ''}</div><button onclick="event.stopPropagation(); openModal('${item.id}')" class="text-slate-300 hover:text-[#07c160] p-1 pl-2 ml-1 border-l border-slate-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="accordion-content bg-slate-50/40"><div class="p-4 text-xs text-slate-500 border-t border-slate-50/80 space-y-2 bg-slate-50/30"><div><span class="font-medium text-slate-400 block mb-1">设备厂家:</span> <span class="text-slate-700 select-text">${escapeHtml(item.vendor)}</span></div><div><span class="font-medium text-slate-400 block mb-1.5">设备密码:</span><div class="flex flex-wrap gap-1.5">${pwList.map(p => `<div class="text-[#07c160] font-mono font-bold text-sm select-all bg-[#f0fff4] px-2.5 py-1 rounded border border-[#c6f6d5] hover:bg-[#c6f6d5] transition-colors">${escapeHtml(p)}</div>`).join('')}</div></div>${item.model ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">资产型号:</span> <span class="text-slate-700 select-text">${escapeHtml(item.model)}</span></div>` : ''}${item.remark ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">备注说明:</span> <span class="text-slate-600 select-text whitespace-pre-wrap">${escapeHtml(item.remark)}</span></div>` : ''}</div></div></div>`}).join('')}</div>`;
         container.appendChild(section);
     });
     if (!hasContent) container.innerHTML = `<div class="text-center py-16 text-slate-400 text-sm"><svg class="w-12 h-12 mx-auto text-slate-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>暂无匹配的密码记录</div>`;
@@ -185,7 +185,9 @@ function openModal(record = null) {
     const modal = document.getElementById('formModal');
     document.getElementById('recordForm').reset();
     document.getElementById('adminPassword').value = sessionStorage.getItem('admin_pass') || '';
-    if (record) {
+    if (id) {
+        const record = appState.rawRecords.find(r => r.id === id);
+        if (!record) return;
         document.getElementById('modalTitle').textContent = "修改记录详情";
         document.getElementById('recordId').value = record.id;
         document.getElementById('formVendor').value = record.vendor;
@@ -235,16 +237,28 @@ async function syncToCloudflare(newRecordsData, adminPass) {
     btn.disabled = true; btn.innerHTML = '正在上传...';
     try {
         const payload = { password: adminPass, data: newRecordsData };
-        const response = await fetch('/api/passwords', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        const resData = await response.json();
+        const response = await fetch('/api/passwords', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(payload) 
+        });
         if (response.status === 401) throw new Error("管理员密码错误，拒绝修改");
-        else if (!response.ok) throw new Error(resData.error || "网络中断");
+        let resData = {};
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            resData = await response.json();
+        }
+        if (!response.ok) throw new Error(resData.error || `服务器响应异常 (${response.status})`);
         appState.rawRecords = newRecordsData;
         showToast("数据同步成功", "success");
         closeModal();
         renderRecords(document.getElementById('searchInput').value);
-    } catch (err) { showToast(err.message, "error"); }
-    finally { btn.disabled = false; btn.innerHTML = '保存上传'; }
+    } catch (err) { 
+        showToast(err.message, "error"); 
+    } finally { 
+        btn.disabled = false; 
+        btn.innerHTML = '保存上传'; 
+    }
 }
 function showToast(msg, type = 'success') {
     const toast = document.getElementById('toast');

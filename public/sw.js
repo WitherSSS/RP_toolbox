@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rp-toolbox-v3'; 
+const CACHE_NAME = 'rp-toolbox-v4'; 
 
 const ASSETS = [
   './',
@@ -18,23 +18,7 @@ const ASSETS = [
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return Promise.all(
-        ASSETS.map(url => {
-          return fetch(url)
-            .then(response => {
-              if (!response.ok) {
-                console.error('【预缓存跳过，文件不存在或报错】:', url);
-                return;
-              }
-              return cache.put(url, response);
-            })
-            .catch(err => {
-              console.error('【预缓存网络错误】:', url, err);
-            });
-        })
-      );
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
@@ -52,33 +36,26 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
 
+  const reqUrl = new URL(event.request.url);
+  let targetUrlStr = event.request.url;
+  const pathName = reqUrl.pathname;
+  if (pathName !== '/' && !pathName.split('/').pop().includes('.')) {
+    const cleanPath = pathName.endsWith('/') ? pathName.slice(0, -1) : pathName;
+    targetUrlStr = reqUrl.origin + cleanPath + '.html' + reqUrl.search;
+  }
   event.respondWith(
-    fetch(event.request)
+    fetch(targetUrlStr)
       .then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
           const resClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+          caches.open(CACHE_NAME).then(cache => cache.put(targetUrlStr, resClone));
         }
         return networkResponse;
       })
       .catch(() => {
-        return caches.match(event.request).then(cachedResponse => {
+        return caches.match(targetUrlStr).then(cachedResponse => {
           if (cachedResponse) return cachedResponse;
-
-          const reqUrl = new URL(event.request.url);
-          let cleanPath = reqUrl.pathname;
-          
-          if (cleanPath.endsWith('/')) {
-            cleanPath = cleanPath.slice(0, -1);
-          }
-
-          if (cleanPath && !cleanPath.includes('.')) {
-            const fallbackUrl = reqUrl.origin + cleanPath + '.html';
-            return caches.match(fallbackUrl).then(htmlFallback => {
-              if (htmlFallback) return htmlFallback;
-              throw new Error('离线且无缓存');
-            });
-          }
+          console.error('彻底离线且无缓存：', targetUrlStr);
           throw new Error('离线且无缓存');
         });
       })

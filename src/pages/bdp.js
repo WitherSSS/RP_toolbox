@@ -20,14 +20,14 @@ export const renderBDP = () => {
     </div>
     <form id="calcForm">
         <div class="section-title">定值</div>
-        <div class="input-group"><label>启动值:</label><input type="number" step="any" name="Iqd" value="0.4"><span class="unit">A</span></div>
+        <div class="input-group"><label>启动值:</label><input type="number" step="any" name="Iqd" value="0.4" onfocus="this.select()"  onblur="if(this.value==='') this.value='0.4'"><span class="unit">A</span></div>
         
         <div class="section-title">动作特性</div>
         <div class="input-group">
             <label>保护厂家:</label>
             <select id="manufacturer" class="flex-1 text-right bg-transparent outline-none text-[#07c160] font-medium"></select>
         </div>
-        <div class="input-group"><label>斜率:</label><input type="number" step="any" id="K2_input" name="K2" value="0.3"><span class="unit"></span></div>
+        <div class="input-group"><label>斜率:</label><input type="number" step="any" id="K2_input" name="K2" value="0.3" onfocus="this.select()"  onblur="if(this.value==='') this.value='0.3'"><span class="unit"></span></div>
         <button type="button" class="btn-primary" onclick="calculate()">计算</button>
     </form>
     <div id="results" class="hidden result-container">

@@ -106,11 +106,17 @@ const vectorArrowsPlugin = {
 export const renderVR = () => {
     return `
     <style>
-        .symbol { color: #888; margin: 0 4px; font-size: 14px; }
+        .input-group {margin-bottom: 16px; align-items: center; }
+        .input-group input {padding: 8px 6px; border-radius: 4px; }
+        th, td { padding: 10px 4px; }
+        .symbol { color: #888; margin: 0 4px; font-size: 14px; flex-shrink: 0; }
         .section-title { line-height: 4em; cursor: pointer; display: flex; justify-content: center; align-items: center; margin-bottom: 1px; }
         .section-title svg { margin-left: 8px; width: 18px; height: 18px; color: #07c160; }
         .result-box { padding: 16px; background: white; margin-top: 10px; font-size: 14px; line-height: 1.8; color: #333; }
         .chart-wrapper { background: white; margin-top: 10px; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; aspect-ratio: 1 / 1; position: relative; }
+        #inputContent .input-group { display: flex; align-items: center; width: 100%; box-sizing: border-box;padding: 0 10px; }
+        #inputContent .input-group label { width: 50px; flex-shrink: 0; }
+        #inputContent .input-group input { flex: 1; min-width: 0; width: 100%;}
     </style>
     <div id="header" class="bg-white p-4 shadow-sm flex items-center justify-between font-bold text-lg sticky top-0 z-50">
         <a href="/" data-link class="w-12 text-gray-500 hover:text-gray-800 flex items-center">
@@ -166,14 +172,14 @@ function renderDynamicInputs() {
     if (!container) return;
     if (isAnalysisMode) {
         container.innerHTML = `
-            <div class="input-group"><label>A相:</label><input type="number" step="any" name="val1" value="10"><span class="symbol">∠</span><input type="number" step="any" name="ang1" value="0"><span class="symbol">°</span></div>
-            <div class="input-group"><label>B相:</label><input type="number" step="any" name="val2" value="20"><span class="symbol">∠</span><input type="number" step="any" name="ang2" value="240"><span class="symbol">°</span></div>
-            <div class="input-group"><label>C相:</label><input type="number" step="any" name="val3" value="30"><span class="symbol">∠</span><input type="number" step="any" name="ang3" value="120"><span class="symbol">°</span></div>`;
+            <div class="input-group"><label>A相:</label><input type="number" step="any" name="val1" value="10" onfocus="this.select()"><span class="symbol">∠</span><input type="number" step="any" name="ang1" value="0" onfocus="this.select()"><span class="symbol">°</span></div>
+            <div class="input-group"><label>B相:</label><input type="number" step="any" name="val2" value="20" onfocus="this.select()"><span class="symbol">∠</span><input type="number" step="any" name="ang2" value="240" onfocus="this.select()"><span class="symbol">°</span></div>
+            <div class="input-group"><label>C相:</label><input type="number" step="any" name="val3" value="30" onfocus="this.select()"><span class="symbol">∠</span><input type="number" step="any" name="ang3" value="120" onfocus="this.select()"><span class="symbol">°</span></div>`;
     } else {
         container.innerHTML = `
-            <div class="input-group"><label>正序:</label><input type="number" step="any" name="val1" value="57.7"><span class="symbol">∠</span><input type="number" step="any" name="ang1" value="0"><span class="symbol">°</span></div>
-            <div class="input-group"><label>负序:</label><input type="number" step="any" name="val2" value="0"><span class="symbol">∠</span><input type="number" step="any" name="ang2" value="0"><span class="symbol">°</span></div>
-            <div class="input-group"><label>零序:</label><input type="number" step="any" name="val3" value="0"><span class="symbol">∠</span><input type="number" step="any" name="ang3" value="0"><span class="symbol">°</span></div>`;
+            <div class="input-group"><label>正序:</label><input type="number" step="any" name="val1" value="57.7" onfocus="this.select()"><span class="symbol">∠</span><input type="number" step="any" name="ang1" value="0" onfocus="this.select()"><span class="symbol">°</span></div>
+            <div class="input-group"><label>负序:</label><input type="number" step="any" name="val2" value="0" onfocus="this.select()"><span class="symbol">∠</span><input type="number" step="any" name="ang2" value="0" onfocus="this.select()"><span class="symbol">°</span></div>
+            <div class="input-group"><label>零序:</label><input type="number" step="any" name="val3" value="0" onfocus="this.select()"><span class="symbol">∠</span><input type="number" step="any" name="ang3" value="0" onfocus="this.select()"><span class="symbol">°</span></div>`;
     }
 }
 function doVRCalculate() {

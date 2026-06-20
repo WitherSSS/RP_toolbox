@@ -31,16 +31,16 @@ export const renderMTDP = () => {
     </div>
     <form id="calcForm">
         <div class="section-title">参数</div>
-        <div class="input-group"><label>主变容量:</label><input type="number" step="any" name="S" value="50"><span class="unit">MVA</span></div>
-        <div class="input-group"><label>高侧额压:</label><input type="number" step="any" name="Uh" value="110"><span class="unit">kV</span></div>
-        <div class="input-group"><label>低侧额压:</label><input type="number" step="any" name="Ul" value="10.5"><span class="unit">kV</span></div>
+        <div class="input-group"><label>主变容量:</label><input type="number" step="any" name="S" value="50" onfocus="this.select()"  onblur="if(this.value==='') this.value='50'"><span class="unit">MVA</span></div>
+        <div class="input-group"><label>高侧额压:</label><input type="number" step="any" name="Uh" value="110" onfocus="this.select()"  onblur="if(this.value==='') this.value='110'"><span class="unit">kV</span></div>
+        <div class="input-group"><label>低侧额压:</label><input type="number" step="any" name="Ul" value="10.5" onfocus="this.select()"  onblur="if(this.value==='') this.value='10.5'"><span class="unit">kV</span></div>
         <div class="input-group"><label>接线方式:</label><select name="Clock" class="text-gray-700"><option value="11" selected>11 (Yd11)</option><option value="0">0 (Yy0)</option></select><span class="unit">点</span></div>
-        <div class="input-group"><label>高CT比值:</label><input type="number" step="any" name="CTh" value="160"><span class="unit"></span></div>
-        <div class="input-group"><label>低CT比值:</label><input type="number" step="any" name="CTl" value="800"><span class="unit"></span></div>
+        <div class="input-group"><label>高CT比值:</label><input type="number" step="any" name="CTh" value="160" onfocus="this.select()"  onblur="if(this.value==='') this.value='160'"><span class="unit"></span></div>
+        <div class="input-group"><label>低CT比值:</label><input type="number" step="any" name="CTl" value="800" onfocus="this.select()"  onblur="if(this.value==='') this.value='800'"><span class="unit"></span></div>
         
         <div class="section-title">定值</div>
-        <div class="input-group"><label>启动值:</label><input type="number" step="any" name="Iqd" value="0.5"><span class="unit">Ie</span></div>
-        <div class="input-group"><label>差速断:</label><input type="number" step="any" name="Isd" value="7"><span class="unit">Ie</span></div>
+        <div class="input-group"><label>启动值:</label><input type="number" step="any" name="Iqd" value="0.5" onfocus="this.select()"  onblur="if(this.value==='') this.value='0.5'"><span class="unit">Ie</span></div>
+        <div class="input-group"><label>差速断:</label><input type="number" step="any" name="Isd" value="7" onfocus="this.select()"  onblur="if(this.value==='') this.value='7'"><span class="unit">Ie</span></div>
         
         <div class="section-title">动作特性</div>
         <div class="input-group"><label>保护厂家:</label><select id="manufacturer" class="text-[#07c160] font-bold"></select></div>
@@ -64,13 +64,13 @@ export const renderMTDP = () => {
             <div class="flex space-x-2 mb-3">
                 <div class="flex-1 bg-gray-50 p-2 rounded border">
                     <div class="text-xs font-bold mb-1 text-gray-700">测试点 1</div>
-                    <div class="flex items-center text-xs mb-1"><span class="w-8">高压</span><input type="number" step="any" id="rev_h1" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0"></div>
-                    <div class="flex items-center text-xs"><span class="w-8">低压</span><input type="number" step="any" id="rev_l1" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0"></div>
+                    <div class="flex items-center text-xs mb-1"><span class="w-8">高压</span><input type="number" step="any" id="rev_h1" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0" onfocus="this.select()" onblur="if(this.value==='') this.value='0'"></div>
+                    <div class="flex items-center text-xs"><span class="w-8">低压</span><input type="number" step="any" id="rev_l1" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0" onfocus="this.select()" onblur="if(this.value==='') this.value='0'"></div>
                 </div>
                 <div class="flex-1 bg-gray-50 p-2 rounded border">
                     <div class="text-xs font-bold mb-1 text-gray-700">测试点 2</div>
-                    <div class="flex items-center text-xs mb-1"><span class="w-8">高压</span><input type="number" step="any" id="rev_h2" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0"></div>
-                    <div class="flex items-center text-xs"><span class="w-8">低压</span><input type="number" step="any" id="rev_l2" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0"></div>
+                    <div class="flex items-center text-xs mb-1"><span class="w-8">高压</span><input type="number" step="any" id="rev_h2" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0" onfocus="this.select()" onblur="if(this.value==='') this.value='0'"></div>
+                    <div class="flex items-center text-xs"><span class="w-8">低压</span><input type="number" step="any" id="rev_l2" class="w-full text-right bg-white border border-gray-200 px-1 py-1 rounded" value="0" onfocus="this.select()" onblur="if(this.value==='') this.value='0'"></div>
                 </div>
             </div>
             <button type="button" class="w-full bg-blue-500 text-white rounded py-2 text-sm font-bold active:bg-blue-600" onclick="calculateReverse()">计算实际斜率</button>
@@ -103,31 +103,31 @@ export const initMTDP = () => {
     renderSlopes(0);
     initRgzsRows();
 };
-function addRgzsRow(initVal = 0) {
+function addRgzsRow(initVal = '') {
     const container = document.getElementById('rgzs-container');
     if (!container) return;
     const index = container.children.length + 1;
     const div = document.createElement('div');
     div.className = "input-group";
-    div.innerHTML = `<label>横坐标 ${index}:</label><input type="number" step="any" name="RGZS" value="${initVal}"><span class="unit">Ie</span>`;
+    div.innerHTML = `<label>横坐标 ${index}:</label><input type="number" step="any" name="RGZS" value="${initVal}" onfocus="this.select()"  onblur="if(this.value==='') this.value=''"><span class="unit">Ie</span>`;
     container.appendChild(div);
 }
 function initRgzsRows() {
     const container = document.getElementById('rgzs-container');
     if (container) {
         container.innerHTML = '';
-        addRgzsRow(0);
-        addRgzsRow(0);
+        addRgzsRow();
+        addRgzsRow();
     }
 }
 function renderSlopes(index) {
     const container = document.getElementById('slopes-container');
     if (!container) return;
     const k = array_k[index];
-    let html = `<div class="input-group"><label>一段斜率:</label><input type="number" step="any" name="K1" value="${k[0]}"><span class="unit"></span></div><div class="input-group"><label>二段斜率:</label><input type="number" step="any" name="K2" value="${k[1]}"><span class="unit"></span></div>`;
-    if (index !== 2) html += `<div class="input-group"><label>三段斜率:</label><input type="number" step="any" name="K3" value="${k[2]}"><span class="unit"></span></div>`;
-    html += `<div class="input-group"><label>拐点1:</label><input type="number" step="any" name="Z1" value="${k[3]}"><span class="unit">Ie</span></div>`;
-    if (index !== 2) html += `<div class="input-group"><label>拐点2:</label><input type="number" step="any" name="Z2" value="${k[4]}"><span class="unit">Ie</span></div>`;
+    let html = `<div class="input-group"><label>一段斜率:</label><input type="number" step="any" name="K1" value="${k[0]}" onfocus="this.select()"  onblur="if(this.value==='') this.value='${k[0]}'"><span class="unit"></span></div><div class="input-group"><label>二段斜率:</label><input type="number" step="any" name="K2" value="${k[1]}" onfocus="this.select()"  onblur="if(this.value==='') this.value='${k[1]}'"><span class="unit"></span></div>`;
+    if (index !== 2) html += `<div class="input-group"><label>三段斜率:</label><input type="number" step="any" name="K3" value="${k[2]}" onfocus="this.select()"  onblur="if(this.value==='') this.value='${k[2]}'"><span class="unit"></span></div>`;
+    html += `<div class="input-group"><label>拐点1:</label><input type="number" step="any" name="Z1" value="${k[3]}" onfocus="this.select()"  onblur="if(this.value==='') this.value='${k[3]}'"><span class="unit">Ie</span></div>`;
+    if (index !== 2) html += `<div class="input-group"><label>拐点2:</label><input type="number" step="any" name="Z2" value="${k[4]}" onfocus="this.select()"  onblur="if(this.value==='') this.value='${k[4]}'"><span class="unit">Ie</span></div>`;
     container.innerHTML = html;
 }
 function createTableHtml(title, highCur, lowCur, clock, method) {

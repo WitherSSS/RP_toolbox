@@ -23,12 +23,12 @@ export const renderMTCI = () => {
     </div>
     <form id="calcForm">
         <div class="section-title">铭牌参数</div>
-        <div class="input-group"><label>主变容量:</label><input type="number" step="any" name="S" value="50" placeholder="50"><span class="unit">MVA</span></div>
-        <div class="input-group"><label>高侧额压:</label><input type="number" step="any" name="Uh" value="110" placeholder="110"><span class="unit">kV</span></div>
-        <div class="input-group"><label>低侧额压:</label><input type="number" step="any" name="Ul" value="10.5" placeholder="10.5"><span class="unit">kV</span></div>
-        <div class="input-group"><label>短路阻抗:</label><input type="number" step="any" name="Uk" value="7.2" placeholder="7.2"><span class="unit">%</span></div>
-        <div class="input-group"><label>高侧CT比值:</label><input type="number" step="any" name="CTh" value="80" placeholder="80"><span class="unit"></span></div>
-        <div class="input-group"><label>低侧CT比值:</label><input type="number" step="any" name="CTl" value="600" placeholder="600"><span class="unit"></span></div>
+        <div class="input-group"><label>主变容量:</label><input type="number" step="any" name="S" value="50" onfocus="this.select()"  onblur="if(this.value==='') this.value='50'"><span class="unit">MVA</span></div>
+        <div class="input-group"><label>高侧额压:</label><input type="number" step="any" name="Uh" value="110" onfocus="this.select()"  onblur="if(this.value==='') this.value='110'"><span class="unit">kV</span></div>
+        <div class="input-group"><label>低侧额压:</label><input type="number" step="any" name="Ul" value="10.5" onfocus="this.select()"  onblur="if(this.value==='') this.value='10.5'"><span class="unit">kV</span></div>
+        <div class="input-group"><label>短路阻抗:</label><input type="number" step="any" name="Uk" value="8" onfocus="this.select()"  onblur="if(this.value==='') this.value='8'"><span class="unit">%</span></div>
+        <div class="input-group"><label>高侧CT比值:</label><input type="number" step="any" name="CTh" value="160" onfocus="this.select()"  onblur="if(this.value==='') this.value='160'"><span class="unit"></span></div>
+        <div class="input-group"><label>低侧CT比值:</label><input type="number" step="any" name="CTl" value="600"  onfocus="this.select()"  onblur="if(this.value==='') this.value='600'"><span class="unit"></span></div>
         <button type="button" class="btn-primary" onclick="calculate()">计算</button>
     </form>
     <div id="results" class="hidden result-container">

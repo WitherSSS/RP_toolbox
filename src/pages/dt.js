@@ -23,7 +23,7 @@ export const renderDT = () => {
         .copy-btn:hover { background: #555; }
     </style>
     <div id="header" class="bg-white p-4 shadow-sm flex items-center justify-between font-bold text-lg sticky top-0 z-50">
-        <a href="/" data-link class="w-12 text-gray-500 hover:text-gray-800 flex items-center">
+        <a href="/" data-link class="w-12 text-gray-500 hover:text-gray-800 flex items-center" aria-label="返回首页">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
         <div class="flex-1 text-center truncate">文本转 GBK 16进制</div>

@@ -1,3 +1,4 @@
+import './css/style.css';
 import { initRouter } from './router.js';
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed', err));

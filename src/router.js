@@ -6,6 +6,7 @@ import { renderIP, initIP } from './pages/ip.js';
 import { renderDT, initDT } from './pages/dt.js';
 import { renderBDP, initBDP } from './pages/bdp.js';
 import { renderVR, initVR } from './pages/vr.js';
+import { renderBase, initBase } from './pages/base.js';
 const routes = {
     "/": { render: renderIndex, init: initIndex },
     "/pw": { render: renderPW, init: initPW },
@@ -14,7 +15,8 @@ const routes = {
     "/ip": { render: renderIP, init: initIP },
     "/dt": { render: renderDT, init: initDT },
     "/bdp": { render: renderBDP, init: initBDP },
-    "/vr": { render: renderVR, init: initVR }
+    "/vr": { render: renderVR, init: initVR },
+    "/base": { render: renderBase, init: initBase }
 };
 const router = async () => {
     const path = window.location.pathname;

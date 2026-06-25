@@ -1,5 +1,5 @@
 export const renderBDP = () => {
-    return `
+  return `
     <style>
         .input-group label { width: 100px; }
         .input-group .unit { width: 40px; }
@@ -36,49 +36,53 @@ export const renderBDP = () => {
     `;
 };
 export const initBDP = () => {
-    const array = ["南瑞继保", "深瑞"]; 
-    const array_k = [[0, 0.3], [0, 0.43]];
-    let currentIndex = 0; 
-    
-    const mSelect = document.getElementById('manufacturer');
-    const kInput = document.getElementById('K2_input');
-    if (mSelect && kInput) {
-        
-        mSelect.innerHTML = ""; 
-        
-        array.forEach((name, index) => { 
-            const opt = document.createElement('option'); 
-            opt.value = index; 
-            opt.textContent = name; 
-            mSelect.appendChild(opt); 
-        });
-        
-        mSelect.addEventListener('change', (e) => { 
-            currentIndex = parseInt(e.target.value); 
-            kInput.value = array_k[currentIndex][1]; 
-        });
-    }
-    
-    window.calculate = calculate;
+  const array = ["南瑞继保", "深瑞"];
+  const array_k = [
+    [0, 0.3],
+    [0, 0.43],
+  ];
+  let currentIndex = 0;
+
+  const mSelect = document.getElementById("manufacturer");
+  const kInput = document.getElementById("K2_input");
+  if (mSelect && kInput) {
+    mSelect.innerHTML = "";
+
+    array.forEach((name, index) => {
+      const opt = document.createElement("option");
+      opt.value = index;
+      opt.textContent = name;
+      mSelect.appendChild(opt);
+    });
+
+    mSelect.addEventListener("change", (e) => {
+      currentIndex = parseInt(e.target.value);
+      kInput.value = array_k[currentIndex][1];
+    });
+  }
+
+  window.calculate = calculate;
 };
-function getAngles(branch, isReverse = false) { 
-    if (branch === 1) return [0, 240, 120]; 
-    else return isReverse ? [0, 240, 120] : [180, 60, 300]; 
+function getAngles(branch, isReverse = false) {
+  if (branch === 1) return [0, 240, 120];
+  else return isReverse ? [0, 240, 120] : [180, 60, 300];
 }
 function createTableHtml(title, b1Cur, b2Cur) {
-    const isReverse = parseFloat(b2Cur) < 0; 
-    const b1Angles = getAngles(1); 
-    const b2Angles = getAngles(2, isReverse); 
-    const b1Val = Math.abs(parseFloat(b1Cur)).toFixed(3); 
-    const b2Val = Math.abs(parseFloat(b2Cur)).toFixed(3);
-    
-    let hint = ""; 
-    if (!isReverse) {
-        hint = "此时保护处于动作临界点。稍微 <span class='text-blue-600 font-bold'>↓降低↓</span> 支路2电流动作， <span class='text-red-600 font-bold'>↑增加↑</span> 不动作。";
-    } else {
-        hint = "此时保护处于动作临界点。稍微 <span class='text-red-600 font-bold'>↑增加↑</span> 支路2电流动作， <span class='text-blue-600 font-bold'>↓降低↓</span> 不动作。";
-    }
-    return `
+  const isReverse = parseFloat(b2Cur) < 0;
+  const b1Angles = getAngles(1);
+  const b2Angles = getAngles(2, isReverse);
+  const b1Val = Math.abs(parseFloat(b1Cur)).toFixed(3);
+  const b2Val = Math.abs(parseFloat(b2Cur)).toFixed(3);
+
+  let hint = "";
+  if (!isReverse) {
+    hint =
+      "此时保护处于动作临界点。稍微 <span class='text-blue-600 font-bold'>↓降低↓</span> 支路2电流动作， <span class='text-red-600 font-bold'>↑增加↑</span> 不动作。";
+  } else {
+    hint =
+      "此时保护处于动作临界点。稍微 <span class='text-red-600 font-bold'>↑增加↑</span> 支路2电流动作， <span class='text-blue-600 font-bold'>↓降低↓</span> 不动作。";
+  }
+  return `
     <div class="result-card">
         <div class="result-card-title">${title}</div>
         <table>
@@ -96,31 +100,29 @@ function createTableHtml(title, b1Cur, b2Cur) {
     </div>`;
 }
 function calculate() {
-    const form = document.getElementById('calcForm');
-    if (!form) return;
-    const fd = new FormData(form); 
-    const data = Object.fromEntries(fd.entries());
-    
-    const Iqd = parseFloat(data.Iqd) || 0.4; 
-    const K2 = parseFloat(data.K2) || 0.3;
-    
-    
-    const IhX1 = ((Iqd + Iqd / K2) / 2).toFixed(3); 
-    const IlX1 = ((Iqd / K2 - Iqd) / 2).toFixed(3); 
-    const IhX2 = ((Iqd + Iqd / K2 + K2 + 1) / 2).toFixed(3); 
-    const IlX2 = ((Iqd / K2 + 1 - Iqd - K2) / 2).toFixed(3);
-    
-    let html = ""; 
-    html += createTableHtml("1. 第一个校验点 (两支路变比设置需相同)", IhX1, IlX1); 
-    html += createTableHtml("2. 第二个校验点", IhX2, IlX2);
-    
-    
-    const resultContent = document.getElementById('resultContent');
-    const resultsDiv = document.getElementById('results');
-    
-    if (resultContent && resultsDiv) {
-        resultContent.innerHTML = html; 
-        resultsDiv.classList.remove('hidden'); 
-        window.scrollTo({ top: resultsDiv.offsetTop - 80, behavior: 'smooth' });
-    }
+  const form = document.getElementById("calcForm");
+  if (!form) return;
+  const fd = new FormData(form);
+  const data = Object.fromEntries(fd.entries());
+
+  const Iqd = parseFloat(data.Iqd) || 0.4;
+  const K2 = parseFloat(data.K2) || 0.3;
+
+  const IhX1 = ((Iqd + Iqd / K2) / 2).toFixed(3);
+  const IlX1 = ((Iqd / K2 - Iqd) / 2).toFixed(3);
+  const IhX2 = ((Iqd + Iqd / K2 + K2 + 1) / 2).toFixed(3);
+  const IlX2 = ((Iqd / K2 + 1 - Iqd - K2) / 2).toFixed(3);
+
+  let html = "";
+  html += createTableHtml("1. 第一个校验点 (两支路变比设置需相同)", IhX1, IlX1);
+  html += createTableHtml("2. 第二个校验点", IhX2, IlX2);
+
+  const resultContent = document.getElementById("resultContent");
+  const resultsDiv = document.getElementById("results");
+
+  if (resultContent && resultsDiv) {
+    resultContent.innerHTML = html;
+    resultsDiv.classList.remove("hidden");
+    window.scrollTo({ top: resultsDiv.offsetTop - 80, behavior: "smooth" });
+  }
 }

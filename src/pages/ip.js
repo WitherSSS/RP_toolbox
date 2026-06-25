@@ -1,5 +1,5 @@
 export const renderIP = () => {
-    return `
+  return `
     <style>
         .input-group label { width: 110px; }
         .input-group .unit { width: 45px; }
@@ -51,85 +51,80 @@ export const renderIP = () => {
     `;
 };
 export const initIP = () => {
-    
-    window.calculate = calculate;
+  window.calculate = calculate;
 };
 function calculate() {
-    const form = document.getElementById('calcForm');
-    if (!form) return;
-    const fd = new FormData(form); 
-    const data = Object.fromEntries(fd.entries());
-    
-    
-    const K = parseFloat(data.K); 
-    const Z01 = parseFloat(data.Z01); 
-    const Z02 = parseFloat(data.Z02); 
-    const Z03 = parseFloat(data.Z03); 
-    const Z1 = parseFloat(data.Z1); 
-    const Z2 = parseFloat(data.Z2); 
-    const Z3 = parseFloat(data.Z3); 
-    const A1 = parseFloat(data.A1); 
-    const A0 = parseFloat(data.A0); 
-    const I = parseFloat(data.I) || 2;
+  const form = document.getElementById("calcForm");
+  if (!form) return;
+  const fd = new FormData(form);
+  const data = Object.fromEntries(fd.entries());
 
-    const fmt = (num) => parseFloat(num.toFixed(3));
-    
-    const resContainer = document.getElementById('resultCards'); 
-    if (!resContainer) return;
-    resContainer.innerHTML = "";
-    
-    
-    const groundingPoints = [ 
-        { name: "接地距离Ⅰ段", val: Z01 }, 
-        { name: "接地距离Ⅱ段", val: Z02 }, 
-        { name: "接地距离Ⅲ段", val: Z03 } 
-    ];
-    
-    groundingPoints.forEach(p => { 
-        if (p.val === undefined || isNaN(p.val)) return;
-        const U_no = fmt((1 + K) * p.val * I * 1.05);
-        const U_act = fmt((1 + K) * p.val * I * 0.95);
-        resContainer.innerHTML += generateGroundCard(p.name, U_no, U_act, I, A0); 
-    });
-    
-    
-    const phasePoints = [ 
-        { name: "相间距离Ⅰ段", val: Z1 }, 
-        { name: "相间距离Ⅱ段", val: Z2 }, 
-        { name: "相间距离Ⅲ段", val: Z3 } 
-    ];
-    
-    const f = 57.7 * Math.sin(30 * Math.PI / 180);
-    
-    phasePoints.forEach(p => {
-        if (p.val === undefined || isNaN(p.val)) return;
-        const calcPhase = (factor) => {
-            const IZ = I * p.val * factor;
-            const Ubmag = fmt(Math.sqrt(f * f + IZ * IZ));
-            const angleOff = (180 * Math.atan(IZ / f) / Math.PI);
-            return {
-                mag: Ubmag,
-                angleB: fmt(180 + angleOff),
-                angleC: fmt(180 - angleOff)
-            }; 
-        };
-        
-        const pNo = calcPhase(1.05); 
-        const pAct = calcPhase(0.95); 
-        resContainer.innerHTML += generatePhaseCard(p.name, pNo, pAct, I, A1);
-    });
-    
-    
-    const resultsDiv = document.getElementById('results');
-    if (resultsDiv) {
-        resultsDiv.classList.remove('hidden'); 
-        window.scrollTo({ top: resultsDiv.offsetTop - 80, behavior: 'smooth' });
-    }
+  const K = parseFloat(data.K);
+  const Z01 = parseFloat(data.Z01);
+  const Z02 = parseFloat(data.Z02);
+  const Z03 = parseFloat(data.Z03);
+  const Z1 = parseFloat(data.Z1);
+  const Z2 = parseFloat(data.Z2);
+  const Z3 = parseFloat(data.Z3);
+  const A1 = parseFloat(data.A1);
+  const A0 = parseFloat(data.A0);
+  const I = parseFloat(data.I) || 2;
+
+  const fmt = (num) => parseFloat(num.toFixed(3));
+
+  const resContainer = document.getElementById("resultCards");
+  if (!resContainer) return;
+  resContainer.innerHTML = "";
+
+  const groundingPoints = [
+    { name: "接地距离Ⅰ段", val: Z01 },
+    { name: "接地距离Ⅱ段", val: Z02 },
+    { name: "接地距离Ⅲ段", val: Z03 },
+  ];
+
+  groundingPoints.forEach((p) => {
+    if (p.val === undefined || isNaN(p.val)) return;
+    const U_no = fmt((1 + K) * p.val * I * 1.05);
+    const U_act = fmt((1 + K) * p.val * I * 0.95);
+    resContainer.innerHTML += generateGroundCard(p.name, U_no, U_act, I, A0);
+  });
+
+  const phasePoints = [
+    { name: "相间距离Ⅰ段", val: Z1 },
+    { name: "相间距离Ⅱ段", val: Z2 },
+    { name: "相间距离Ⅲ段", val: Z3 },
+  ];
+
+  const f = 57.7 * Math.sin((30 * Math.PI) / 180);
+
+  phasePoints.forEach((p) => {
+    if (p.val === undefined || isNaN(p.val)) return;
+    const calcPhase = (factor) => {
+      const IZ = I * p.val * factor;
+      const Ubmag = fmt(Math.sqrt(f * f + IZ * IZ));
+      const angleOff = (180 * Math.atan(IZ / f)) / Math.PI;
+      return {
+        mag: Ubmag,
+        angleB: fmt(180 + angleOff),
+        angleC: fmt(180 - angleOff),
+      };
+    };
+
+    const pNo = calcPhase(1.05);
+    const pAct = calcPhase(0.95);
+    resContainer.innerHTML += generatePhaseCard(p.name, pNo, pAct, I, A1);
+  });
+
+  const resultsDiv = document.getElementById("results");
+  if (resultsDiv) {
+    resultsDiv.classList.remove("hidden");
+    window.scrollTo({ top: resultsDiv.offsetTop - 80, behavior: "smooth" });
+  }
 }
-function generateGroundCard(name, Uno, Uact, I, A0) { 
-    const I_fmt = parseFloat(I); 
-    const A0_fmt = parseFloat(A0); 
-    return `
+function generateGroundCard(name, Uno, Uact, I, A0) {
+  const I_fmt = parseFloat(I);
+  const A0_fmt = parseFloat(A0);
+  return `
     <div class="result-card">
         <div class="result-card-title">${name} (模拟A相接地)</div>
         <div class="state-grid">
@@ -160,13 +155,13 @@ function generateGroundCard(name, Uno, Uact, I, A0) {
                 </table>
             </div>
         </div>
-    </div>`; 
+    </div>`;
 }
-function generatePhaseCard(name, pNo, pAct, I, A1) { 
-    const angleB = (270 - A1); 
-    const angleC = (90 - A1); 
-    const I_fmt = parseFloat(I); 
-    return `
+function generatePhaseCard(name, pNo, pAct, I, A1) {
+  const angleB = 270 - A1;
+  const angleC = 90 - A1;
+  const I_fmt = parseFloat(I);
+  return `
     <div class="result-card">
         <div class="result-card-title">${name} (模拟BC相间短路)</div>
         <div class="state-grid">
@@ -197,5 +192,5 @@ function generatePhaseCard(name, pNo, pAct, I, A1) {
                 </table>
             </div>
         </div>
-    </div>`; 
+    </div>`;
 }

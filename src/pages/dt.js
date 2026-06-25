@@ -1,5 +1,5 @@
 export const renderDT = () => {
-    return `
+  return `
     <style>
         .dt-container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .input-area { background: white; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
@@ -56,110 +56,108 @@ export const renderDT = () => {
 };
 
 export const initDT = () => {
-    if (!window.GBK) {
-        const script = document.createElement('script');
-        script.src = "https://cdn.jsdelivr.net/npm/gbk.js/dist/gbk.min.js";
-        script.onload = () => {
-            if (document.getElementById('inputText')?.value) {
-                window.convertDT();
-            }
-        };
-        document.head.appendChild(script);
-    }
-    
-    window.convertDT = convertDT;
-    window.copyResultDT = copyResultDT;
+  if (!window.GBK) {
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/gbk.js/dist/gbk.min.js";
+    script.onload = () => {
+      if (document.getElementById("inputText")?.value) {
+        window.convertDT();
+      }
+    };
+    document.head.appendChild(script);
+  }
+
+  window.convertDT = convertDT;
+  window.copyResultDT = copyResultDT;
 };
 
 function convertDT() {
-    const inputEl = document.getElementById('inputText');
-    const containerEl = document.getElementById('resultContainer');
-    const outputEl = document.getElementById('hexOutput');
-    const encoding = document.getElementById('encodingSelect').value;
-    const labelEl = document.getElementById('resultLabel');
-    
-    if (!inputEl || !containerEl || !outputEl) return;
-    
-    const input = inputEl.value;
-    if (!input) {
-        containerEl.classList.add('hidden');
-        outputEl.innerText = "";
-        return;
-    }
+  const inputEl = document.getElementById("inputText");
+  const containerEl = document.getElementById("resultContainer");
+  const outputEl = document.getElementById("hexOutput");
+  const encoding = document.getElementById("encodingSelect").value;
+  const labelEl = document.getElementById("resultLabel");
 
-    const encNames = { 'gbk': 'GBK', 'unicode': 'Unicode (UTF-16)', 'utf8': 'UTF-8'};
-    if (labelEl) labelEl.innerText = `转换结果 (${encNames[encoding]} Hex)：`;
-    if (encoding === 'gbk' && !window.GBK) {
-        outputEl.innerText = "GBK 转换引擎正在后台加载，请稍候...";
-        containerEl.classList.remove('hidden');
-        return;
-    }
+  if (!inputEl || !containerEl || !outputEl) return;
 
-    const lines = input.split('\n');
-    let finalOutput = [];
-    const utf8Encoder = new TextEncoder();
+  const input = inputEl.value;
+  if (!input) {
+    containerEl.classList.add("hidden");
+    outputEl.innerText = "";
+    return;
+  }
 
-    lines.forEach(line => {
-        let lineHex = "";
-        const chars = Array.from(line);
-        
-        for (let char of chars) {
-            let hexString = "";
-            
-            if (encoding === 'gbk') {
-                const bytes = window.GBK.encode(char);
-                bytes.forEach(byte => {
-                    hexString += byte.toString(16).toUpperCase().padStart(2, '0');
-                });
-                if (hexString.length === 2) {
-                    hexString = "00" + hexString;
-                }
-            } 
-            else if (encoding === 'utf8') {
-                const bytes = utf8Encoder.encode(char);
-                bytes.forEach(byte => {
-                    hexString += byte.toString(16).toUpperCase().padStart(2, '0');
-                });
-            } 
-            else if (encoding === 'unicode') {
-                const cp = char.codePointAt(0);
-                hexString = cp.toString(16).toUpperCase().padStart(4, '0');
-            }
-            
-            lineHex += hexString + " ";
+  const encNames = { gbk: "GBK", unicode: "Unicode (UTF-16)", utf8: "UTF-8" };
+  if (labelEl) labelEl.innerText = `转换结果 (${encNames[encoding]} Hex)：`;
+  if (encoding === "gbk" && !window.GBK) {
+    outputEl.innerText = "GBK 转换引擎正在后台加载，请稍候...";
+    containerEl.classList.remove("hidden");
+    return;
+  }
+
+  const lines = input.split("\n");
+  let finalOutput = [];
+  const utf8Encoder = new TextEncoder();
+
+  lines.forEach((line) => {
+    let lineHex = "";
+    const chars = Array.from(line);
+
+    for (let char of chars) {
+      let hexString = "";
+
+      if (encoding === "gbk") {
+        const bytes = window.GBK.encode(char);
+        bytes.forEach((byte) => {
+          hexString += byte.toString(16).toUpperCase().padStart(2, "0");
+        });
+        if (hexString.length === 2) {
+          hexString = "00" + hexString;
         }
-        finalOutput.push(lineHex.trim());
-    });
-    
-    outputEl.innerText = finalOutput.join('\n');
-    containerEl.classList.remove('hidden');
+      } else if (encoding === "utf8") {
+        const bytes = utf8Encoder.encode(char);
+        bytes.forEach((byte) => {
+          hexString += byte.toString(16).toUpperCase().padStart(2, "0");
+        });
+      } else if (encoding === "unicode") {
+        const cp = char.codePointAt(0);
+        hexString = cp.toString(16).toUpperCase().padStart(4, "0");
+      }
+
+      lineHex += hexString + " ";
+    }
+    finalOutput.push(lineHex.trim());
+  });
+
+  outputEl.innerText = finalOutput.join("\n");
+  containerEl.classList.remove("hidden");
 }
 
 function copyResultDT() {
-    const outputEl = document.getElementById('hexOutput');
-    const copyBtn = document.getElementById('copyBtn');
-    if (!outputEl || !copyBtn) return;
-    
-    const text = outputEl.innerText;
-    if (!text || text.includes("正在后台加载")) return;
-    
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    
-    try {
-        document.execCommand('copy');
-        const originalText = copyBtn.innerText;
-        copyBtn.innerText = "已复制";
-        copyBtn.style.color = "#07c160";
-        setTimeout(() => {
-            copyBtn.innerText = originalText;
-            copyBtn.style.color = "#eee";
-        }, 1500);
-    } catch (err) {
-        console.error("复制失败: ", err);
-    }
-    
-    document.body.removeChild(textarea);
+  const outputEl = document.getElementById("hexOutput");
+  const copyBtn = document.getElementById("copyBtn");
+  if (!outputEl || !copyBtn) return;
+
+  const text = outputEl.innerText;
+  if (!text || text.includes("正在后台加载")) return;
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  try {
+    document.execCommand("copy");
+    const originalText = copyBtn.innerText;
+    copyBtn.innerText = "已复制";
+    copyBtn.style.color = "#07c160";
+    setTimeout(() => {
+      copyBtn.innerText = originalText;
+      copyBtn.style.color = "#eee";
+    }, 1500);
+  } catch (err) {
+    console.error("复制失败: ", err);
+  }
+
+  document.body.removeChild(textarea);
 }

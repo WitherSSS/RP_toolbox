@@ -1,8 +1,7 @@
-
 let appState = { rawRecords: [] };
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
 export const renderPW = () => {
-    return `
+  return `
     <style>
         .accordion-content { transition: max-height 0.25s ease-out, opacity 0.2s ease-out; max-height: 0; opacity: 0; overflow: hidden; }
         .accordion-content.open { opacity: 1; }
@@ -80,216 +79,368 @@ export const renderPW = () => {
     `;
 };
 export const initPW = () => {
-    
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.handleSearch = handleSearch;
-    window.toggleAccordion = toggleAccordion;
-    window.saveRecord = saveRecord;
-    window.deleteRecord = deleteRecord;
-    
-    initAlphaSidebar();
-    setupTouchListeners();
-    fetchData();
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+  window.handleSearch = handleSearch;
+  window.toggleAccordion = toggleAccordion;
+  window.saveRecord = saveRecord;
+  window.deleteRecord = deleteRecord;
+
+  initAlphaSidebar();
+  setupTouchListeners();
+  fetchData();
 };
 function initAlphaSidebar() {
-    const sidebar = document.getElementById('alphaSidebar');
-    if (sidebar) {
-        sidebar.innerHTML = ALPHABET.map(l => `<div data-letter="${l}" class="w-5 h-5 flex items-center justify-center rounded-full transition-all cursor-pointer">${l}</div>`).join('');
-    }
+  const sidebar = document.getElementById("alphaSidebar");
+  if (sidebar) {
+    sidebar.innerHTML = ALPHABET.map(
+      (l) =>
+        `<div data-letter="${l}" class="w-5 h-5 flex items-center justify-center rounded-full transition-all cursor-pointer">${l}</div>`,
+    ).join("");
+  }
 }
 function setupTouchListeners() {
-    const sidebar = document.getElementById('alphaSidebar');
-    if (!sidebar) return;
-    const handleAlphaNav = (clientX, clientY) => {
-        const target = document.elementFromPoint(clientX, clientY);
-        if (target && target.dataset && target.dataset.letter) {
-            const letter = target.dataset.letter;
-            Array.from(sidebar.children).forEach(el => {
-                if(el.dataset.letter === letter) el.classList.add('bg-[#07c160]', 'text-white', 'scale-110');
-                else el.classList.remove('bg-[#07c160]', 'text-white', 'scale-110');
-            });
-            scrollToSection(letter);
-        }
-    };
-    sidebar.addEventListener('touchstart', (e) => handleAlphaNav(e.touches[0].clientX, e.touches[0].clientY));
-    sidebar.addEventListener('touchmove', (e) => { e.preventDefault(); handleAlphaNav(e.touches[0].clientX, e.touches[0].clientY); });
-    sidebar.addEventListener('touchend', () => setTimeout(() => Array.from(sidebar.children).forEach(el => el.classList.remove('bg-[#07c160]', 'text-white', 'scale-110')), 300));
-    sidebar.addEventListener('mousedown', (e) => {
-        handleAlphaNav(e.clientX, e.clientY);
-        const onMouseMove = (me) => handleAlphaNav(me.clientX, me.clientY);
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', () => { window.removeEventListener('mousemove', onMouseMove); Array.from(sidebar.children).forEach(el => el.classList.remove('bg-[#07c160]', 'text-white', 'scale-110')); }, { once: true });
-    });
+  const sidebar = document.getElementById("alphaSidebar");
+  if (!sidebar) return;
+  const handleAlphaNav = (clientX, clientY) => {
+    const target = document.elementFromPoint(clientX, clientY);
+    if (target && target.dataset && target.dataset.letter) {
+      const letter = target.dataset.letter;
+      Array.from(sidebar.children).forEach((el) => {
+        if (el.dataset.letter === letter)
+          el.classList.add("bg-[#07c160]", "text-white", "scale-110");
+        else el.classList.remove("bg-[#07c160]", "text-white", "scale-110");
+      });
+      scrollToSection(letter);
+    }
+  };
+  sidebar.addEventListener("touchstart", (e) =>
+    handleAlphaNav(e.touches[0].clientX, e.touches[0].clientY),
+  );
+  sidebar.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    handleAlphaNav(e.touches[0].clientX, e.touches[0].clientY);
+  });
+  sidebar.addEventListener("touchend", () =>
+    setTimeout(
+      () =>
+        Array.from(sidebar.children).forEach((el) =>
+          el.classList.remove("bg-[#07c160]", "text-white", "scale-110"),
+        ),
+      300,
+    ),
+  );
+  sidebar.addEventListener("mousedown", (e) => {
+    handleAlphaNav(e.clientX, e.clientY);
+    const onMouseMove = (me) => handleAlphaNav(me.clientX, me.clientY);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener(
+      "mouseup",
+      () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        Array.from(sidebar.children).forEach((el) =>
+          el.classList.remove("bg-[#07c160]", "text-white", "scale-110"),
+        );
+      },
+      { once: true },
+    );
+  });
 }
-function scrollToSection(letter) { 
-    const el = document.getElementById(`section-${letter}`); 
-    if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' }); 
+function scrollToSection(letter) {
+  const el = document.getElementById(`section-${letter}`);
+  if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
 }
 async function fetchData() {
-    try {
-        const response = await fetch('/api/passwords');
-        if (!response.ok) throw new Error("网络响应不正常");
-        const data = await response.json();
-        appState.rawRecords = Array.isArray(data) ? data : [];
-        renderRecords();
-    } catch (err) {
-        showToast("数据加载失败，请检查网络", "error");
-        const container = document.getElementById('listContainer');
-        if (container) container.innerHTML = `<div class="text-center py-16 text-red-400 text-sm">拉取云端数据失败 (或处于离线模式未缓存)</div>`;
-    }
+  try {
+    const response = await fetch("/api/passwords");
+    if (!response.ok) throw new Error("网络响应不正常");
+    const data = await response.json();
+    appState.rawRecords = Array.isArray(data) ? data : [];
+    renderRecords();
+  } catch (err) {
+    showToast("数据加载失败，请检查网络", "error");
+    const container = document.getElementById("listContainer");
+    if (container)
+      container.innerHTML = `<div class="text-center py-16 text-red-400 text-sm">拉取云端数据失败 (或处于离线模式未缓存)</div>`;
+  }
 }
 function getFirstLetter(str) {
-    if (!str) return '#';
-    const firstChar = str.trim().charAt(0);
-    if (/^[A-Za-z]/.test(firstChar)) return firstChar.toUpperCase();
-    try {
-        return firstChar.localeCompare('阿', 'zh') < 0 ? '#' : firstChar.localeCompare('八', 'zh') < 0 ? 'A' : firstChar.localeCompare('擦', 'zh') < 0 ? 'B' : firstChar.localeCompare('搭', 'zh') < 0 ? 'C' : firstChar.localeCompare('蛾', 'zh') < 0 ? 'D' : firstChar.localeCompare('发', 'zh') < 0 ? 'E' : firstChar.localeCompare('噶', 'zh') < 0 ? 'F' : firstChar.localeCompare('哈', 'zh') < 0 ? 'G' : firstChar.localeCompare('击', 'zh') < 0 ? 'H' : firstChar.localeCompare('喀', 'zh') < 0 ? 'J' : firstChar.localeCompare('垃', 'zh') < 0 ? 'K' : firstChar.localeCompare('妈', 'zh') < 0 ? 'L' : firstChar.localeCompare('拿', 'zh') < 0 ? 'M' : firstChar.localeCompare('哦', 'zh') < 0 ? 'N' : firstChar.localeCompare('啪', 'zh') < 0 ? 'O' : firstChar.localeCompare('期', 'zh') < 0 ? 'P' : firstChar.localeCompare('然', 'zh') < 0 ? 'Q' : firstChar.localeCompare('撒', 'zh') < 0 ? 'R' : firstChar.localeCompare('塌', 'zh') < 0 ? 'S' : firstChar.localeCompare('挖', 'zh') < 0 ? 'T' : firstChar.localeCompare('昔', 'zh') < 0 ? 'W' : firstChar.localeCompare('压', 'zh') < 0 ? 'X' : firstChar.localeCompare('匝', 'zh') < 0 ? 'Y' : 'Z';
-    } catch(e) { return '#'; }
+  if (!str) return "#";
+  const firstChar = str.trim().charAt(0);
+  if (/^[A-Za-z]/.test(firstChar)) return firstChar.toUpperCase();
+  try {
+    return firstChar.localeCompare("阿", "zh") < 0
+      ? "#"
+      : firstChar.localeCompare("八", "zh") < 0
+        ? "A"
+        : firstChar.localeCompare("擦", "zh") < 0
+          ? "B"
+          : firstChar.localeCompare("搭", "zh") < 0
+            ? "C"
+            : firstChar.localeCompare("蛾", "zh") < 0
+              ? "D"
+              : firstChar.localeCompare("发", "zh") < 0
+                ? "E"
+                : firstChar.localeCompare("噶", "zh") < 0
+                  ? "F"
+                  : firstChar.localeCompare("哈", "zh") < 0
+                    ? "G"
+                    : firstChar.localeCompare("击", "zh") < 0
+                      ? "H"
+                      : firstChar.localeCompare("喀", "zh") < 0
+                        ? "J"
+                        : firstChar.localeCompare("垃", "zh") < 0
+                          ? "K"
+                          : firstChar.localeCompare("妈", "zh") < 0
+                            ? "L"
+                            : firstChar.localeCompare("拿", "zh") < 0
+                              ? "M"
+                              : firstChar.localeCompare("哦", "zh") < 0
+                                ? "N"
+                                : firstChar.localeCompare("啪", "zh") < 0
+                                  ? "O"
+                                  : firstChar.localeCompare("期", "zh") < 0
+                                    ? "P"
+                                    : firstChar.localeCompare("然", "zh") < 0
+                                      ? "Q"
+                                      : firstChar.localeCompare("撒", "zh") < 0
+                                        ? "R"
+                                        : firstChar.localeCompare("塌", "zh") <
+                                            0
+                                          ? "S"
+                                          : firstChar.localeCompare(
+                                                "挖",
+                                                "zh",
+                                              ) < 0
+                                            ? "T"
+                                            : firstChar.localeCompare(
+                                                  "昔",
+                                                  "zh",
+                                                ) < 0
+                                              ? "W"
+                                              : firstChar.localeCompare(
+                                                    "压",
+                                                    "zh",
+                                                  ) < 0
+                                                ? "X"
+                                                : firstChar.localeCompare(
+                                                      "匝",
+                                                      "zh",
+                                                    ) < 0
+                                                  ? "Y"
+                                                  : "Z";
+  } catch (e) {
+    return "#";
+  }
 }
 function renderRecords(filterText = "") {
-    const container = document.getElementById('listContainer');
-    if (!container) return;
-    container.innerHTML = "";
-    const keyword = filterText.trim().toLowerCase();
-    const filtered = appState.rawRecords.filter(r => (r.vendor.toLowerCase().includes(keyword) || (r.model && r.model.toLowerCase().includes(keyword)) || (r.remark && r.remark.toLowerCase().includes(keyword)) || (r.password && r.password.toLowerCase().includes(keyword))));
-    let groups = {};
-    ALPHABET.forEach(l => groups[l] = []);
-    filtered.forEach(item => { let letter = getFirstLetter(item.vendor); if (!groups[letter]) letter = '#'; groups[letter].push(item); });
-    let hasContent = false;
-    ALPHABET.forEach(letter => {
-        const items = groups[letter];
-        if (items.length === 0) return;
-        hasContent = true;
-        const section = document.createElement('div');
-        section.id = `section-${letter}`;
-        section.className = 'scroll-mt-32';
-        section.innerHTML = `<h2 class="text-xs font-bold text-[#07c160] bg-slate-50 py-1 mb-2 px-1 tracking-wider rounded">${letter}</h2><div class="bg-white rounded-xl border border-slate-100 shadow-sm divide-y divide-slate-50 overflow-hidden">${items.map(item => {
-            const pwList = item.password.split('\n').map(p => p.trim()).filter(Boolean);
-            const mainPw = pwList[0] || '空';
-            const extraCount = pwList.length - 1;
-            return `<div class="bg-white"><div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors"><div class="flex-1 min-w-0 pr-4"><div class="flex items-center space-x-2"><span class="font-semibold text-slate-800 text-base truncate">${escapeHtml(item.vendor)}</span>${item.model ? `<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md font-medium truncate max-w-[120px]">${escapeHtml(item.model)}</span>` : ''}</div></div><div class="flex items-center space-x-2"><div class="flex items-center space-x-1" onclick="event.stopPropagation();"><span class="text-xs font-mono font-bold text-slate-400 select-all bg-slate-50 px-2 py-1 rounded border border-slate-100/60 transition-all active:bg-[#f0fff4] active:text-[#07c160] max-w-[90px] truncate block">${escapeHtml(mainPw)}</span>${extraCount > 0 ? `<span class="text-[10px] text-[#07c160] bg-[#f0fff4] px-1 py-0.5 rounded font-bold">+${extraCount}</span>` : ''}</div><button onclick="event.stopPropagation(); openModal('${item.id}')" class="text-slate-300 hover:text-[#07c160] p-1 pl-2 ml-1 border-l border-slate-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="accordion-content bg-slate-50/40"><div class="p-4 text-xs text-slate-500 border-t border-slate-50/80 space-y-2 bg-slate-50/30"><div><span class="font-medium text-slate-400 block mb-1">设备厂家:</span> <span class="text-slate-700 select-text">${escapeHtml(item.vendor)}</span></div><div><span class="font-medium text-slate-400 block mb-1.5">设备密码:</span><div class="flex flex-wrap gap-1.5">${pwList.map(p => `<div class="text-[#07c160] font-mono font-bold text-sm select-all bg-[#f0fff4] px-2.5 py-1 rounded border border-[#c6f6d5] hover:bg-[#c6f6d5] transition-colors">${escapeHtml(p)}</div>`).join('')}</div></div>${item.model ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">资产型号:</span> <span class="text-slate-700 select-text">${escapeHtml(item.model)}</span></div>` : ''}${item.remark ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">备注说明:</span> <span class="text-slate-600 select-text whitespace-pre-wrap">${escapeHtml(item.remark)}</span></div>` : ''}</div></div></div>`}).join('')}</div>`;
-        container.appendChild(section);
-    });
-    if (!hasContent) container.innerHTML = `<div class="text-center py-16 text-slate-400 text-sm"><svg class="w-12 h-12 mx-auto text-slate-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>暂无匹配的密码记录</div>`;
+  const container = document.getElementById("listContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  const keyword = filterText.trim().toLowerCase();
+  const filtered = appState.rawRecords.filter(
+    (r) =>
+      r.vendor.toLowerCase().includes(keyword) ||
+      (r.model && r.model.toLowerCase().includes(keyword)) ||
+      (r.remark && r.remark.toLowerCase().includes(keyword)) ||
+      (r.password && r.password.toLowerCase().includes(keyword)),
+  );
+  let groups = {};
+  ALPHABET.forEach((l) => (groups[l] = []));
+  filtered.forEach((item) => {
+    let letter = getFirstLetter(item.vendor);
+    if (!groups[letter]) letter = "#";
+    groups[letter].push(item);
+  });
+  let hasContent = false;
+  ALPHABET.forEach((letter) => {
+    const items = groups[letter];
+    if (items.length === 0) return;
+    hasContent = true;
+    const section = document.createElement("div");
+    section.id = `section-${letter}`;
+    section.className = "scroll-mt-32";
+    section.innerHTML = `<h2 class="text-xs font-bold text-[#07c160] bg-slate-50 py-1 mb-2 px-1 tracking-wider rounded">${letter}</h2><div class="bg-white rounded-xl border border-slate-100 shadow-sm divide-y divide-slate-50 overflow-hidden">${items
+      .map((item) => {
+        const pwList = item.password
+          .split("\n")
+          .map((p) => p.trim())
+          .filter(Boolean);
+        const mainPw = pwList[0] || "空";
+        const extraCount = pwList.length - 1;
+        return `<div class="bg-white"><div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors"><div class="flex-1 min-w-0 pr-4"><div class="flex items-center space-x-2"><span class="font-semibold text-slate-800 text-base truncate">${escapeHtml(item.vendor)}</span>${item.model ? `<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md font-medium truncate max-w-[120px]">${escapeHtml(item.model)}</span>` : ""}</div></div><div class="flex items-center space-x-2"><div class="flex items-center space-x-1" onclick="event.stopPropagation();"><span class="text-xs font-mono font-bold text-slate-400 select-all bg-slate-50 px-2 py-1 rounded border border-slate-100/60 transition-all active:bg-[#f0fff4] active:text-[#07c160] max-w-[90px] truncate block">${escapeHtml(mainPw)}</span>${extraCount > 0 ? `<span class="text-[10px] text-[#07c160] bg-[#f0fff4] px-1 py-0.5 rounded font-bold">+${extraCount}</span>` : ""}</div><button onclick="event.stopPropagation(); openModal('${item.id}')" class="text-slate-300 hover:text-[#07c160] p-1 pl-2 ml-1 border-l border-slate-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="accordion-content bg-slate-50/40"><div class="p-4 text-xs text-slate-500 border-t border-slate-50/80 space-y-2 bg-slate-50/30"><div><span class="font-medium text-slate-400 block mb-1">设备厂家:</span> <span class="text-slate-700 select-text">${escapeHtml(item.vendor)}</span></div><div><span class="font-medium text-slate-400 block mb-1.5">设备密码:</span><div class="flex flex-wrap gap-1.5">${pwList.map((p) => `<div class="text-[#07c160] font-mono font-bold text-sm select-all bg-[#f0fff4] px-2.5 py-1 rounded border border-[#c6f6d5] hover:bg-[#c6f6d5] transition-colors">${escapeHtml(p)}</div>`).join("")}</div></div>${item.model ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">资产型号:</span> <span class="text-slate-700 select-text">${escapeHtml(item.model)}</span></div>` : ""}${item.remark ? `<div class="pt-1"><span class="font-medium text-slate-400 block mb-1">备注说明:</span> <span class="text-slate-600 select-text whitespace-pre-wrap">${escapeHtml(item.remark)}</span></div>` : ""}</div></div></div>`;
+      })
+      .join("")}</div>`;
+    container.appendChild(section);
+  });
+  if (!hasContent)
+    container.innerHTML = `<div class="text-center py-16 text-slate-400 text-sm"><svg class="w-12 h-12 mx-auto text-slate-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>暂无匹配的密码记录</div>`;
 }
-function toggleAccordion(el) { 
-    const content = el.nextElementSibling; 
-    if (content.classList.contains('open')) { content.style.maxHeight = '0px'; content.classList.remove('open'); } 
-    else { content.style.maxHeight = content.scrollHeight + 'px'; content.classList.add('open'); } 
+function toggleAccordion(el) {
+  const content = el.nextElementSibling;
+  if (content.classList.contains("open")) {
+    content.style.maxHeight = "0px";
+    content.classList.remove("open");
+  } else {
+    content.style.maxHeight = content.scrollHeight + "px";
+    content.classList.add("open");
+  }
 }
-function handleSearch() { 
-    renderRecords(document.getElementById('searchInput').value); 
+function handleSearch() {
+  renderRecords(document.getElementById("searchInput").value);
 }
 function openModal(id = null) {
-    const modal = document.getElementById('formModal');
-    document.getElementById('recordForm').reset();
-    document.getElementById('adminPassword').value = sessionStorage.getItem('admin_pass') || '';
-    if (id && typeof id === 'string') { 
-        const record = appState.rawRecords.find(r => r.id === id);
-        
-        if (record) {
-            document.getElementById('modalTitle').textContent = "修改记录详情";
-            document.getElementById('recordId').value = record.id;
-            document.getElementById('formVendor').value = record.vendor;
-            document.getElementById('formPassword').value = record.password;
-            document.getElementById('formModel').value = record.model || '';
-            document.getElementById('formRemark').value = record.remark || '';
-            document.getElementById('deleteBtn').classList.remove('hidden');
-        }
-    } else {
-        document.getElementById('modalTitle').textContent = "新增密码记录";
-        document.getElementById('recordId').value = '';
-        document.getElementById('deleteBtn').classList.add('hidden');
+  const modal = document.getElementById("formModal");
+  document.getElementById("recordForm").reset();
+  document.getElementById("adminPassword").value =
+    sessionStorage.getItem("admin_pass") || "";
+  if (id && typeof id === "string") {
+    const record = appState.rawRecords.find((r) => r.id === id);
+
+    if (record) {
+      document.getElementById("modalTitle").textContent = "修改记录详情";
+      document.getElementById("recordId").value = record.id;
+      document.getElementById("formVendor").value = record.vendor;
+      document.getElementById("formPassword").value = record.password;
+      document.getElementById("formModel").value = record.model || "";
+      document.getElementById("formRemark").value = record.remark || "";
+      document.getElementById("deleteBtn").classList.remove("hidden");
     }
-    modal.classList.remove('hidden');
+  } else {
+    document.getElementById("modalTitle").textContent = "新增密码记录";
+    document.getElementById("recordId").value = "";
+    document.getElementById("deleteBtn").classList.add("hidden");
+  }
+  modal.classList.remove("hidden");
 }
-function closeModal() { 
-    document.getElementById('formModal').classList.add('hidden'); 
+function closeModal() {
+  document.getElementById("formModal").classList.add("hidden");
 }
 async function saveRecord(e) {
-    e.preventDefault();
-    const id = document.getElementById('recordId').value;
-    const vendor = document.getElementById('formVendor').value.trim();
-    const password = document.getElementById('formPassword').value.trim();
-    const model = document.getElementById('formModel').value.trim();
-    const remark = document.getElementById('formRemark').value.trim();
-    const adminPass = document.getElementById('adminPassword').value.trim();
-    if (!vendor || !password || !adminPass) return;
-    sessionStorage.setItem('admin_pass', adminPass);
-    let newRecords = [...appState.rawRecords];
-    if (id) { const idx = newRecords.findIndex(r => r.id === id); if (idx !== -1) newRecords[idx] = { id, vendor, password, model, remark }; }
-    else newRecords.push({ id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2), vendor, password, model, remark });
-    await syncToCloudflare(newRecords, adminPass);
+  e.preventDefault();
+  const id = document.getElementById("recordId").value;
+  const vendor = document.getElementById("formVendor").value.trim();
+  const password = document.getElementById("formPassword").value.trim();
+  const model = document.getElementById("formModel").value.trim();
+  const remark = document.getElementById("formRemark").value.trim();
+  const adminPass = document.getElementById("adminPassword").value.trim();
+  if (!vendor || !password || !adminPass) return;
+  sessionStorage.setItem("admin_pass", adminPass);
+  let newRecords = [...appState.rawRecords];
+  if (id) {
+    const idx = newRecords.findIndex((r) => r.id === id);
+    if (idx !== -1) newRecords[idx] = { id, vendor, password, model, remark };
+  } else
+    newRecords.push({
+      id: crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2),
+      vendor,
+      password,
+      model,
+      remark,
+    });
+  await syncToCloudflare(newRecords, adminPass);
 }
 async function deleteRecord() {
-    const id = document.getElementById('recordId').value;
-    const vendor = document.getElementById('formVendor').value;
-    const adminPass = document.getElementById('adminPassword').value.trim();
-    if (!adminPass) return showToast("请输入管理员操作密码", "error");
-    if (!id) return;
-    const confirmName = prompt(`警告：此操作不可逆！\n请输入设备厂家名称 "${vendor}" 以确认永久删除：`);
-    if (confirmName !== vendor) return showToast("输入不匹配，已取消删除", "error");
-    sessionStorage.setItem('admin_pass', adminPass);
-    const newRecords = appState.rawRecords.filter(r => r.id !== id);
-    await syncToCloudflare(newRecords, adminPass);
+  const id = document.getElementById("recordId").value;
+  const vendor = document.getElementById("formVendor").value;
+  const adminPass = document.getElementById("adminPassword").value.trim();
+  if (!adminPass) return showToast("请输入管理员操作密码", "error");
+  if (!id) return;
+  const confirmName = prompt(
+    `警告：此操作不可逆！\n请输入设备厂家名称 "${vendor}" 以确认永久删除：`,
+  );
+  if (confirmName !== vendor)
+    return showToast("输入不匹配，已取消删除", "error");
+  sessionStorage.setItem("admin_pass", adminPass);
+  const newRecords = appState.rawRecords.filter((r) => r.id !== id);
+  await syncToCloudflare(newRecords, adminPass);
 }
 async function syncToCloudflare(newRecordsData, adminPass) {
-    const btn = document.querySelector('button[type="submit"]');
-    btn.disabled = true; btn.innerHTML = '正在上传...';
-    try {
-        const payload = { password: adminPass, data: newRecordsData };
-        const response = await fetch('/api/passwords', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(payload) 
-        });
-        if (response.status === 401) throw new Error("管理员密码错误，拒绝修改");
-        let resData = {};
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            resData = await response.json();
-        }
-        if (!response.ok) throw new Error(resData.error || `服务器响应异常 (${response.status})`);
-        appState.rawRecords = newRecordsData;
-        showToast("数据同步成功", "success");
-        closeModal();
-        renderRecords(document.getElementById('searchInput').value);
-    } catch (err) { 
-        showToast(err.message, "error"); 
-    } finally { 
-        btn.disabled = false; 
-        btn.innerHTML = '保存上传'; 
-    }
-}
-function showToast(msg, type = 'success') {
-    const toast = document.getElementById('toast');
-    const msgEl = document.getElementById('toastMsg');
-    if (!toast || !msgEl) return;
-    
-    toast.className = `fixed top-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-full shadow-lg z-[100] transition-all duration-300 flex items-center space-x-2 text-sm text-white font-medium transform`;
-    if (type === 'success') toast.classList.add('bg-[#07c160]');
-    else toast.classList.add('bg-red-500');
-    msgEl.textContent = msg;
-    requestAnimationFrame(() => {
-        toast.classList.remove('hidden');
-        setTimeout(() => { toast.classList.remove('opacity-0', '-translate-y-4'); toast.classList.add('opacity-100', 'translate-y-0'); }, 10);
+  const btn = document.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.innerHTML = "正在上传...";
+  try {
+    const payload = { password: adminPass, data: newRecordsData };
+    const response = await fetch("/api/passwords", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
+    if (response.status === 401) throw new Error("管理员密码错误，拒绝修改");
+    let resData = {};
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      resData = await response.json();
+    }
+    if (!response.ok)
+      throw new Error(resData.error || `服务器响应异常 (${response.status})`);
+    appState.rawRecords = newRecordsData;
+    showToast("数据同步成功", "success");
+    closeModal();
+    renderRecords(document.getElementById("searchInput").value);
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "保存上传";
+  }
+}
+function showToast(msg, type = "success") {
+  const toast = document.getElementById("toast");
+  const msgEl = document.getElementById("toastMsg");
+  if (!toast || !msgEl) return;
+
+  toast.className = `fixed top-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-full shadow-lg z-[100] transition-all duration-300 flex items-center space-x-2 text-sm text-white font-medium transform`;
+  if (type === "success") toast.classList.add("bg-[#07c160]");
+  else toast.classList.add("bg-red-500");
+  msgEl.textContent = msg;
+  requestAnimationFrame(() => {
+    toast.classList.remove("hidden");
     setTimeout(() => {
-        toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', '-translate-y-4');
-        setTimeout(() => toast.classList.add('hidden'), 300);
-    }, 2500);
+      toast.classList.remove("opacity-0", "-translate-y-4");
+      toast.classList.add("opacity-100", "translate-y-0");
+    }, 10);
+  });
+  setTimeout(() => {
+    toast.classList.remove("opacity-100", "translate-y-0");
+    toast.classList.add("opacity-0", "-translate-y-4");
+    setTimeout(() => toast.classList.add("hidden"), 300);
+  }, 2500);
 }
 function escapeHtml(string) {
-    const matchHtmlRegExp = /["'&<>]/;
-    const str = '' + string;
-    const match = matchHtmlRegExp.exec(str);
-    if (!match) return str;
-    let escape; let html = ''; let index = 0; let lastIndex = 0;
-    for (index = match.index; index < str.length; index++) {
-        switch (str.charCodeAt(index)) { case 34: escape = '&quot;'; break; case 38: escape = '&amp;'; break; case 39: escape = '&#39;'; break; case 60: escape = '&lt;'; break; case 62: escape = '&gt;'; break; default: continue; }
-        if (lastIndex !== index) html += str.substring(lastIndex, index);
-        lastIndex = index + 1; html += escape;
+  const matchHtmlRegExp = /["'&<>]/;
+  const str = "" + string;
+  const match = matchHtmlRegExp.exec(str);
+  if (!match) return str;
+  let escape;
+  let html = "";
+  let index = 0;
+  let lastIndex = 0;
+  for (index = match.index; index < str.length; index++) {
+    switch (str.charCodeAt(index)) {
+      case 34:
+        escape = "&quot;";
+        break;
+      case 38:
+        escape = "&amp;";
+        break;
+      case 39:
+        escape = "&#39;";
+        break;
+      case 60:
+        escape = "&lt;";
+        break;
+      case 62:
+        escape = "&gt;";
+        break;
+      default:
+        continue;
     }
-    return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
+    if (lastIndex !== index) html += str.substring(lastIndex, index);
+    lastIndex = index + 1;
+    html += escape;
+  }
+  return lastIndex !== index ? html + str.substring(lastIndex, index) : html;
 }

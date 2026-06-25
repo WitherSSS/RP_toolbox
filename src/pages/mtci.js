@@ -1,6 +1,5 @@
-
 export const renderMTCI = () => {
-    return `
+  return `
     <style>
         .input-group label { width: 110px; }
         .input-group .unit { width: 45px; }
@@ -51,37 +50,36 @@ export const renderMTCI = () => {
     `;
 };
 export const initMTCI = () => {
-    
-    window.calculate = calculate;
+  window.calculate = calculate;
 };
 function calculate() {
-    const form = document.getElementById('calcForm');
-    if (!form) return;
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
-    
-    const S = parseFloat(data.S) || 50; 
-    const Uh = parseFloat(data.Uh) || 110; 
-    const Ul = parseFloat(data.Ul) || 10.5; 
-    const Uk = parseFloat(data.Uk) || 7.2; 
-    const CTh = parseFloat(data.CTh) || 80; 
-    const CTl = parseFloat(data.CTl) || 600;
-    
-    const i = 0.01 * Uk;
-    
-    const Ih = (400 * S / (Math.sqrt(3) * i * Uh * Uh)).toFixed(1); 
-    const Il = (400 * S / (Math.sqrt(3) * i * Uh * Ul)).toFixed(1);
-    const Ih2 = (1000 * Ih / CTh).toFixed(0); 
-    const Il2 = (1000 * Il / CTl).toFixed(0);
-    
-    document.getElementById('resIh').innerText = Ih + " A"; 
-    document.getElementById('resIl').innerText = Il + " A"; 
-    document.getElementById('resIh2').innerText = Ih2 + " mA"; 
-    document.getElementById('resIl2').innerText = Il2 + " mA";
-    
-    const resultsDiv = document.getElementById('results');
-    if (resultsDiv) {
-        resultsDiv.classList.remove('hidden');
-        window.scrollTo({ top: resultsDiv.offsetTop - 80, behavior: 'smooth' });
-    }
+  const form = document.getElementById("calcForm");
+  if (!form) return;
+  const fd = new FormData(form);
+  const data = Object.fromEntries(fd.entries());
+
+  const S = parseFloat(data.S) || 50;
+  const Uh = parseFloat(data.Uh) || 110;
+  const Ul = parseFloat(data.Ul) || 10.5;
+  const Uk = parseFloat(data.Uk) || 7.2;
+  const CTh = parseFloat(data.CTh) || 80;
+  const CTl = parseFloat(data.CTl) || 600;
+
+  const i = 0.01 * Uk;
+
+  const Ih = ((400 * S) / (Math.sqrt(3) * i * Uh * Uh)).toFixed(1);
+  const Il = ((400 * S) / (Math.sqrt(3) * i * Uh * Ul)).toFixed(1);
+  const Ih2 = ((1000 * Ih) / CTh).toFixed(0);
+  const Il2 = ((1000 * Il) / CTl).toFixed(0);
+
+  document.getElementById("resIh").innerText = Ih + " A";
+  document.getElementById("resIl").innerText = Il + " A";
+  document.getElementById("resIh2").innerText = Ih2 + " mA";
+  document.getElementById("resIl2").innerText = Il2 + " mA";
+
+  const resultsDiv = document.getElementById("results");
+  if (resultsDiv) {
+    resultsDiv.classList.remove("hidden");
+    window.scrollTo({ top: resultsDiv.offsetTop - 80, behavior: "smooth" });
+  }
 }

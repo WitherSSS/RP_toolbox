@@ -1,5 +1,5 @@
 export const renderBase = () => {
-    return `
+  return `
     <style>
         .base-container { max-width: 600px; margin: 0 auto; padding: 20px; }
         .base-card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
@@ -71,91 +71,96 @@ export const renderBase = () => {
 };
 
 export const initBase = () => {
-    const bases = [16, 10, 8, 2];
-    const inputs = bases.map(radix => document.getElementById(`base-${radix}`));
-    const bitWidthSelect = document.getElementById('bitWidth');
-    let lastActiveInput = document.getElementById('base-10');
-    const regexMap = {
-        16: /^-?[0-9A-Fa-f]+$/,
-        10: /^-?[0-9]+$/,
-        8:  /^-?[0-7]+$/,
-        2:  /^-?[01]+$/
-    };
+  const bases = [16, 10, 8, 2];
+  const inputs = bases.map((radix) => document.getElementById(`base-${radix}`));
+  const bitWidthSelect = document.getElementById("bitWidth");
+  let lastActiveInput = document.getElementById("base-10");
+  const regexMap = {
+    16: /^-?[0-9A-Fa-f]+$/,
+    10: /^-?[0-9]+$/,
+    8: /^-?[0-7]+$/,
+    2: /^-?[01]+$/,
+  };
 
-    const formatGroup = (str) => {
-        return str.split('').reverse().reduce((acc, char, index) => {
-            return char + (index > 0 && index % 4 === 0 ? ' ' : '') + acc;
-        }, '');
-    };
+  const formatGroup = (str) => {
+    return str
+      .split("")
+      .reverse()
+      .reduce((acc, char, index) => {
+        return char + (index > 0 && index % 4 === 0 ? " " : "") + acc;
+      }, "");
+  };
 
-    const convert = (sourceInput) => {
-        if (!sourceInput) return;
-        lastActiveInput = sourceInput;
-        const sourceRadix = parseInt(sourceInput.getAttribute('data-radix'));
-        let rawStr = sourceInput.value.replace(/[\s,_]+/g, '');
-        
-        if (!rawStr || rawStr === '-') {
-            inputs.forEach(inp => {
-                if(inp !== sourceInput) inp.value = '';
-                inp.classList.remove('is-invalid');
-            });
-            return;
+  const convert = (sourceInput) => {
+    if (!sourceInput) return;
+    lastActiveInput = sourceInput;
+    const sourceRadix = parseInt(sourceInput.getAttribute("data-radix"));
+    let rawStr = sourceInput.value.replace(/[\s,_]+/g, "");
+
+    if (!rawStr || rawStr === "-") {
+      inputs.forEach((inp) => {
+        if (inp !== sourceInput) inp.value = "";
+        inp.classList.remove("is-invalid");
+      });
+      return;
+    }
+
+    if (!regexMap[sourceRadix].test(rawStr)) {
+      sourceInput.classList.add("is-invalid");
+      return;
+    }
+    sourceInput.classList.remove("is-invalid");
+
+    try {
+      const bits = BigInt(bitWidthSelect.value);
+      const mask = (1n << bits) - 1n;
+      const signBit = 1n << (bits - 1n);
+      const isNegative = rawStr.startsWith("-");
+      const absStr = isNegative ? rawStr.substring(1) : rawStr;
+      let rawBigInt;
+      if (sourceRadix === 16) rawBigInt = BigInt("0x" + absStr);
+      else if (sourceRadix === 8) rawBigInt = BigInt("0o" + absStr);
+      else if (sourceRadix === 2) rawBigInt = BigInt("0b" + absStr);
+      else rawBigInt = BigInt(absStr);
+
+      if (isNegative) rawBigInt = -rawBigInt;
+      const internalValUnsigned = rawBigInt & mask;
+
+      inputs.forEach((inp) => {
+        if (inp !== sourceInput) {
+          inp.classList.remove("is-invalid");
+          const targetRadix = parseInt(inp.getAttribute("data-radix"));
+          let outStr = "";
+
+          if (targetRadix === 10) {
+            let signedVal = internalValUnsigned;
+            if ((internalValUnsigned & signBit) !== 0n) {
+              signedVal = internalValUnsigned - (1n << bits);
+            }
+            outStr = signedVal.toString(10);
+          } else {
+            outStr = internalValUnsigned.toString(targetRadix);
+            if (targetRadix === 16) outStr = outStr.toUpperCase();
+            if (targetRadix === 2) outStr = outStr.padStart(Number(bits), "0");
+            if (targetRadix === 16)
+              outStr = outStr.padStart(Number(bits) / 4, "0");
+            if (targetRadix === 8)
+              outStr = outStr.padStart(Math.ceil(Number(bits) / 3), "0");
+            outStr = formatGroup(outStr);
+          }
+          inp.value = outStr;
         }
+      });
+    } catch (err) {
+      sourceInput.classList.add("is-invalid");
+    }
+  };
 
-        if (!regexMap[sourceRadix].test(rawStr)) {
-            sourceInput.classList.add('is-invalid');
-            return;
-        }
-        sourceInput.classList.remove('is-invalid');
-
-        try {
-            const bits = BigInt(bitWidthSelect.value);
-            const mask = (1n << bits) - 1n;
-            const signBit = 1n << (bits - 1n);
-            const isNegative = rawStr.startsWith('-');
-            const absStr = isNegative ? rawStr.substring(1) : rawStr;
-            let rawBigInt;
-            if (sourceRadix === 16) rawBigInt = BigInt('0x' + absStr);
-            else if (sourceRadix === 8) rawBigInt = BigInt('0o' + absStr);
-            else if (sourceRadix === 2) rawBigInt = BigInt('0b' + absStr);
-            else rawBigInt = BigInt(absStr); 
-
-            if (isNegative) rawBigInt = -rawBigInt;
-            const internalValUnsigned = rawBigInt & mask;
-
-            inputs.forEach(inp => {
-                if (inp !== sourceInput) {
-                    inp.classList.remove('is-invalid');
-                    const targetRadix = parseInt(inp.getAttribute('data-radix'));
-                    let outStr = '';
-
-                    if (targetRadix === 10) {
-                        let signedVal = internalValUnsigned;
-                        if ((internalValUnsigned & signBit) !== 0n) {
-                            signedVal = internalValUnsigned - (1n << bits);
-                        }
-                        outStr = signedVal.toString(10);
-                    } else {
-                        outStr = internalValUnsigned.toString(targetRadix);
-                        if (targetRadix === 16) outStr = outStr.toUpperCase();
-                        if (targetRadix === 2) outStr = outStr.padStart(Number(bits), '0');
-                        if (targetRadix === 16) outStr = outStr.padStart(Number(bits) / 4, '0');
-                        if (targetRadix === 8) outStr = outStr.padStart(Math.ceil(Number(bits) / 3), '0');
-                        outStr = formatGroup(outStr);
-                    }
-                    inp.value = outStr;
-                }
-            });
-        } catch (err) {
-            sourceInput.classList.add('is-invalid');
-        }
-    };
-
-    inputs.forEach(inp => {
-        if (inp) {
-            inp.addEventListener('input', (e) => convert(e.target));
-            inp.addEventListener('focus', () => inp.select());
-        }
-    });
-    bitWidthSelect.addEventListener('change', () => convert(lastActiveInput));
+  inputs.forEach((inp) => {
+    if (inp) {
+      inp.addEventListener("input", (e) => convert(e.target));
+      inp.addEventListener("focus", () => inp.select());
+    }
+  });
+  bitWidthSelect.addEventListener("change", () => convert(lastActiveInput));
 };

@@ -1,8 +1,15 @@
 import './css/style.css';
 import { initRouter } from './router.js';
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed', err));
-}
+import { registerSW } from 'virtual:pwa-register';
+const updateSW = registerSW({
+  onNeedRefresh() {
+    console.log('有新内容可用，请刷新页面');
+  },
+  onOfflineReady() {
+    console.log('应用已支持离线访问');
+  },
+})
+
 window.addEventListener('online', () => document.getElementById('offlineIndicator')?.classList.add('hidden'));
 window.addEventListener('offline', () => document.getElementById('offlineIndicator')?.classList.remove('hidden'));
 let deferredPrompt;
@@ -29,8 +36,6 @@ document.body.addEventListener('click', (e) => {
         e.preventDefault(); 
         const url = link.getAttribute('href');
         history.pushState(null, null, url); 
-        
-        
         window.dispatchEvent(new Event('popstate')); 
     }
 });

@@ -7,6 +7,7 @@ import { renderDT, initDT } from './pages/dt.js';
 import { renderBDP, initBDP } from './pages/bdp.js';
 import { renderVR, initVR } from './pages/vr.js';
 import { renderBase, initBase } from './pages/base.js';
+import { renderMTBP, initMTBP } from './pages/mtbp.js';
 const routes = {
     "/": { render: renderIndex, init: initIndex },
     "/pw": { render: renderPW, init: initPW },
@@ -16,7 +17,8 @@ const routes = {
     "/dt": { render: renderDT, init: initDT },
     "/bdp": { render: renderBDP, init: initBDP },
     "/vr": { render: renderVR, init: initVR },
-    "/base": { render: renderBase, init: initBase }
+    "/base": { render: renderBase, init: initBase },
+    "/mtbp": { render: renderMTBP, init: initMTBP },
 };
 const router = async () => {
     const path = window.location.pathname;

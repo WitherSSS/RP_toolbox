@@ -18,6 +18,7 @@ class Complex {
 }
 const a_op = Complex.fromPolar(1, 120); 
 const a2_op = Complex.fromPolar(1, 240);
+
 const phasorGridPlugin = {
     id: 'phasorGrid',
     beforeDraw: (chart) => {
@@ -29,34 +30,33 @@ const phasorGridPlugin = {
         const radiusMax = Math.abs(x.getPixelForValue(maxVal) - centerX);
         
         ctx.save(); 
-        ctx.strokeStyle = '#f0f0f0'; 
+        ctx.strokeStyle = '#eee'; 
         ctx.lineWidth = 1;
         
+        ctx.beginPath(); 
+        ctx.moveTo(centerX, centerY - radiusMax); 
+        ctx.lineTo(centerX, centerY + radiusMax); 
+        ctx.stroke(); 
         
-        for (let r = 0.25; r <= 1; r += 0.25) { 
-            ctx.beginPath(); 
-            ctx.arc(centerX, centerY, radiusMax * r, 0, 2 * Math.PI); 
-            ctx.stroke(); 
-            ctx.fillStyle = '#bbb'; 
-            ctx.font = '10px Arial'; 
-            ctx.fillText((maxVal * r).toFixed(1), centerX + radiusMax * r + 2, centerY - 2); 
-        }
+        ctx.beginPath(); 
+        ctx.moveTo(centerX - radiusMax, centerY); 
+        ctx.lineTo(centerX + radiusMax, centerY); 
+        ctx.stroke(); 
         
+        ctx.fillStyle = '#999'; 
+        ctx.font = '11px Arial'; 
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         
-        ctx.strokeStyle = '#eee';
-        for (let deg = 0; deg < 360; deg += 30) { 
-            const rad = deg * Math.PI / 180; 
-            ctx.beginPath(); 
-            ctx.moveTo(centerX, centerY); 
-            ctx.lineTo(centerX + radiusMax * Math.cos(rad), centerY - radiusMax * Math.sin(rad)); 
-            ctx.stroke(); 
-            ctx.fillStyle = '#999'; 
-            const textR = radiusMax + 12; 
-            ctx.fillText(deg + '°', centerX + textR * Math.cos(rad) - 8, centerY - textR * Math.sin(rad) + 4); 
-        }
+        ctx.fillText('0°', centerX, centerY - radiusMax - 10); 
+        ctx.fillText('90°', centerX - radiusMax - 14, centerY); 
+        ctx.fillText('180°', centerX, centerY + radiusMax + 10); 
+        ctx.fillText('270°', centerX + radiusMax + 14, centerY); 
+
         ctx.restore();
     }
 };
+
 const vectorArrowsPlugin = {
     id: 'vectorArrows',
     afterDraw: (chart) => {
@@ -72,7 +72,6 @@ const vectorArrowsPlugin = {
                 const targetY = y.getPixelForValue(pt.y); 
                 const color = Array.isArray(dataset.borderColor) ? dataset.borderColor[idx] : dataset.borderColor;
                 
-                
                 ctx.save(); 
                 ctx.beginPath(); 
                 ctx.moveTo(centerX, centerY); 
@@ -81,7 +80,6 @@ const vectorArrowsPlugin = {
                 ctx.lineWidth = dataset.borderWidth || 2; 
                 if (dataset.borderDash) ctx.setLineDash(dataset.borderDash); 
                 ctx.stroke();
-                
                 
                 const angle = Math.atan2(centerY - targetY, targetX - centerX); 
                 ctx.translate(targetX, targetY); 
@@ -94,7 +92,6 @@ const vectorArrowsPlugin = {
                 ctx.fillStyle = color; 
                 ctx.fill(); 
                 ctx.restore();
-                
                 
                 ctx.fillStyle = color; 
                 ctx.font = "bold 13px Arial"; 
@@ -140,7 +137,6 @@ export const renderVR = () => {
     `;
 };
 export const initVR = () => {
-    
     isAnalysisMode = true;
     phasorChartInstance = null;
     
@@ -197,7 +193,6 @@ function doVRCalculate() {
     const a3 = parseFloat(fd.get('ang3')) || 0;
     let va, vb, vc, vp, vn, vz;
     if (isAnalysisMode) {
-        
         va = Complex.fromPolar(v1, a1); 
         vb = Complex.fromPolar(v2, a2); 
         vc = Complex.fromPolar(v3, a3);
@@ -208,10 +203,9 @@ function doVRCalculate() {
             <strong>解析结果：</strong><br>
             正序：<span class="font-bold text-yellow-600">${vp.abs.toFixed(2)}</span> ∠${vp.angle.toFixed(1)}°<br>
             负序：<span class="font-bold text-green-600">${vn.abs.toFixed(2)}</span> ∠${vn.angle.toFixed(1)}°<br>
-            3倍零序 (3U0/3I0)：<span class="font-bold text-red-600">${(vz.abs * 3).toFixed(2)}</span> ∠${vz.angle.toFixed(1)}°
+            3倍零序：<span class="font-bold text-red-600">${(vz.abs * 3).toFixed(2)}</span> ∠${vz.angle.toFixed(1)}°
         `;
     } else {
-        
         vp = Complex.fromPolar(v1, a1); 
         vn = Complex.fromPolar(v2, a2); 
         vz = Complex.fromPolar(v3 / 3, a3); 
@@ -250,25 +244,25 @@ function updatePhasorChart(va, vb, vc, vp, vn, vz) {
     const ctx = canvas.getContext('2d');
     
     const vz3 = vz.multiply(new Complex(3, 0)); 
-    
     const limit = Math.max(va.abs, vb.abs, vc.abs, vp.abs, vn.abs, vz3.abs, 1) * 1.3;
     if (phasorChartInstance) {
         phasorChartInstance.destroy();
     }
+    const toPt = (comp, lbl) => ({ x: -comp.imag, y: comp.real, label: lbl });
     phasorChartInstance = new window.Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [
                 {
                     label: '全量(A/B/C)',
-                    data: [{ x: va.real, y: va.imag, label: 'A' }, { x: vb.real, y: vb.imag, label: 'B' }, { x: vc.real, y: vc.imag, label: 'C' }],
+                    data: [toPt(va, 'A'), toPt(vb, 'B'), toPt(vc, 'C')],
                     borderColor: ['#ff9900', '#00ff00', '#ff0000'],
                     borderWidth: 3,
                     pointRadius: 0
                 },
                 {
                     label: '正序分量',
-                    data: [{ x: vp.real, y: vp.imag, label: 'pA' }, { x: vp.multiply(a2_op).real, y: vp.multiply(a2_op).imag, label: 'pB' }, { x: vp.multiply(a_op).real, y: vp.multiply(a_op).imag, label: 'pC' }],
+                    data: [toPt(vp, 'pA'), toPt(vp.multiply(a2_op), 'pB'), toPt(vp.multiply(a_op), 'pC')],
                     borderColor: '#eab308',
                     borderDash: [5, 5],
                     borderWidth: 1.5,
@@ -276,7 +270,7 @@ function updatePhasorChart(va, vb, vc, vp, vn, vz) {
                 },
                 {
                     label: '负序分量',
-                    data: [{ x: vn.real, y: vn.imag, label: 'nA' }, { x: vn.multiply(a_op).real, y: vn.multiply(a_op).imag, label: 'nB' }, { x: vn.multiply(a2_op).real, y: vn.multiply(a2_op).imag, label: 'nC' }],
+                    data: [toPt(vn, 'nA'), toPt(vn.multiply(a_op), 'nB'), toPt(vn.multiply(a2_op), 'nC')],
                     borderColor: '#22c55e',
                     borderDash: [5, 5],
                     borderWidth: 1.5,
@@ -284,7 +278,7 @@ function updatePhasorChart(va, vb, vc, vp, vn, vz) {
                 },
                 {
                     label: '3倍零序',
-                    data: [{ x: vz3.real, y: vz3.imag, label: '3X0' }],
+                    data: [toPt(vz3, '3X0')],
                     borderColor: '#ef4444',
                     borderDash: [2, 2],
                     borderWidth: 2,

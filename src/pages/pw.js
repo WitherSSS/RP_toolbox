@@ -3,13 +3,7 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
 
 function getRecordItems(record) {
   if (record.items && Array.isArray(record.items)) return record.items;
-  return [
-    {
-      password: record.password || "",
-      model: record.model || "",
-      remark: record.remark || "",
-    },
-  ];
+  return [{ password: record.password || "", model: record.model || "", remark: record.remark || "" }];
 }
 
 export const renderPW = () => {
@@ -60,11 +54,11 @@ export const renderPW = () => {
                         <input type="text" id="formVendor" required class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm mb-2">
                     </div>
                     
-                    <div id="entriesContainer" class="space-y-3"></div>
+                    <div id="entriesContainer" class="space-y-2"></div>
                     
-                    <button type="button" onclick="addFormEntry()" class="w-full mt-2 py-2.5 border-2 border-dashed border-slate-200 text-slate-500 rounded-xl text-sm font-bold hover:border-[#07c160] hover:text-[#07c160] bg-slate-50/50 hover:bg-[#f0fff4] transition-colors flex items-center justify-center space-x-1">
+                    <button type="button" onclick="addFormEntry()" class="w-full mt-2 py-2 border-2 border-dashed border-slate-200 text-slate-500 rounded-lg text-sm font-bold hover:border-[#07c160] hover:text-[#07c160] bg-slate-50/50 hover:bg-[#f0fff4] transition-colors flex items-center justify-center space-x-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        <span>添加一组型号与密码</span>
+                        <span>添加</span>
                     </button>
 
                     <div class="mt-6 pt-4 border-t border-slate-100">
@@ -92,7 +86,7 @@ export const initPW = () => {
   window.toggleAccordion = toggleAccordion;
   window.saveRecord = saveRecord;
   window.deleteRecord = deleteRecord;
-  window.addFormEntry = addFormEntry; // 暴露新增行的函数
+  window.addFormEntry = addFormEntry; 
 
   initAlphaSidebar();
   setupTouchListeners();
@@ -100,41 +94,31 @@ export const initPW = () => {
 };
 
 function addFormEntry(data = {}) {
-  const container = document.getElementById("entriesContainer");
-  const row = document.createElement("div");
-  row.className =
-    "entry-row bg-white border border-slate-200 rounded-xl p-4 relative shadow-sm transition-all";
-  row.innerHTML = `
-        <button type="button" onclick="this.closest('.entry-row').remove()" class="absolute top-3 right-3 text-slate-300 hover:text-red-500 transition-colors" title="删除此组">
+    const container = document.getElementById('entriesContainer');
+    const row = document.createElement('div');
+    row.className = 'entry-row flex items-start gap-2 bg-white border border-slate-200 rounded-lg p-2 relative shadow-sm transition-all';
+    row.innerHTML = `
+        <div class="flex-1">
+            <textarea required rows="2" placeholder="设备口令 *" class="entry-password w-full px-2 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm font-mono whitespace-pre-wrap resize-y">${escapeHtml(data.password || '')}</textarea>
+        </div>
+        <div class="flex-1">
+            <input type="text" placeholder="设备型号" class="entry-model w-full px-2 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm" value="${escapeHtml(data.model || '')}">
+        </div>
+        <div class="flex-1">
+            <input type="text" placeholder="备注信息" class="entry-remark w-full px-2 py-1.5 border border-slate-200 rounded-md focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm" value="${escapeHtml(data.remark || '')}">
+        </div>
+        <button type="button" onclick="this.closest('.entry-row').remove()" class="text-slate-300 hover:text-red-500 transition-colors flex-shrink-0 mt-1.5 px-1" title="删除此行">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </button>
-        <div class="pr-6">
-            <div class="mb-3">
-                <div class="flex justify-between items-end mb-1">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">设备口令 <span class="text-red-500">*</span></label>
-                    <span class="text-[10px] text-slate-400">回车换行可输入多个</span>
-                </div>
-                <textarea required rows="2" placeholder="密码 1&#10;密码 2" class="entry-password w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm font-mono whitespace-pre-wrap">${escapeHtml(data.password || "")}</textarea>
-            </div>
-            <div class="mb-3">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">设备型号 (可选)</label>
-                <input type="text" placeholder="例如：Switch-X1" class="entry-model w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm" value="${escapeHtml(data.model || "")}">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">备注信息 (可选)</label>
-                <textarea rows="1" placeholder="例如：核心机房..." class="entry-remark w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#07c160] focus:outline-none text-sm">${escapeHtml(data.remark || "")}</textarea>
-            </div>
-        </div>
     `;
-  container.appendChild(row);
+    container.appendChild(row);
 }
 
 function initAlphaSidebar() {
   const sidebar = document.getElementById("alphaSidebar");
   if (sidebar) {
     sidebar.innerHTML = ALPHABET.map(
-      (l) =>
-        `<div data-letter="${l}" class="w-5 h-5 flex items-center justify-center rounded-full transition-all cursor-pointer">${l}</div>`,
+      (l) => `<div data-letter="${l}" class="w-5 h-5 flex items-center justify-center rounded-full transition-all cursor-pointer">${l}</div>`,
     ).join("");
   }
 }
@@ -212,66 +196,7 @@ function getFirstLetter(str) {
   const firstChar = str.trim().charAt(0);
   if (/^[A-Za-z]/.test(firstChar)) return firstChar.toUpperCase();
   try {
-    return firstChar.localeCompare("阿", "zh") < 0
-      ? "#"
-      : firstChar.localeCompare("八", "zh") < 0
-        ? "A"
-        : firstChar.localeCompare("擦", "zh") < 0
-          ? "B"
-          : firstChar.localeCompare("搭", "zh") < 0
-            ? "C"
-            : firstChar.localeCompare("蛾", "zh") < 0
-              ? "D"
-              : firstChar.localeCompare("发", "zh") < 0
-                ? "E"
-                : firstChar.localeCompare("噶", "zh") < 0
-                  ? "F"
-                  : firstChar.localeCompare("哈", "zh") < 0
-                    ? "G"
-                    : firstChar.localeCompare("击", "zh") < 0
-                      ? "H"
-                      : firstChar.localeCompare("喀", "zh") < 0
-                        ? "J"
-                        : firstChar.localeCompare("垃", "zh") < 0
-                          ? "K"
-                          : firstChar.localeCompare("妈", "zh") < 0
-                            ? "L"
-                            : firstChar.localeCompare("拿", "zh") < 0
-                              ? "M"
-                              : firstChar.localeCompare("哦", "zh") < 0
-                                ? "N"
-                                : firstChar.localeCompare("啪", "zh") < 0
-                                  ? "O"
-                                  : firstChar.localeCompare("期", "zh") < 0
-                                    ? "P"
-                                    : firstChar.localeCompare("然", "zh") < 0
-                                      ? "Q"
-                                      : firstChar.localeCompare("撒", "zh") < 0
-                                        ? "R"
-                                        : firstChar.localeCompare("塌", "zh") <
-                                            0
-                                          ? "S"
-                                          : firstChar.localeCompare(
-                                                "挖",
-                                                "zh",
-                                              ) < 0
-                                            ? "T"
-                                            : firstChar.localeCompare(
-                                                  "昔",
-                                                  "zh",
-                                                ) < 0
-                                              ? "W"
-                                              : firstChar.localeCompare(
-                                                    "压",
-                                                    "zh",
-                                                  ) < 0
-                                                ? "X"
-                                                : firstChar.localeCompare(
-                                                      "匝",
-                                                      "zh",
-                                                    ) < 0
-                                                  ? "Y"
-                                                  : "Z";
+    return firstChar.localeCompare("阿", "zh") < 0 ? "#" : firstChar.localeCompare("八", "zh") < 0 ? "A" : firstChar.localeCompare("擦", "zh") < 0 ? "B" : firstChar.localeCompare("搭", "zh") < 0 ? "C" : firstChar.localeCompare("蛾", "zh") < 0 ? "D" : firstChar.localeCompare("发", "zh") < 0 ? "E" : firstChar.localeCompare("噶", "zh") < 0 ? "F" : firstChar.localeCompare("哈", "zh") < 0 ? "G" : firstChar.localeCompare("击", "zh") < 0 ? "H" : firstChar.localeCompare("喀", "zh") < 0 ? "J" : firstChar.localeCompare("垃", "zh") < 0 ? "K" : firstChar.localeCompare("妈", "zh") < 0 ? "L" : firstChar.localeCompare("拿", "zh") < 0 ? "M" : firstChar.localeCompare("哦", "zh") < 0 ? "N" : firstChar.localeCompare("啪", "zh") < 0 ? "O" : firstChar.localeCompare("期", "zh") < 0 ? "P" : firstChar.localeCompare("然", "zh") < 0 ? "Q" : firstChar.localeCompare("撒", "zh") < 0 ? "R" : firstChar.localeCompare("塌", "zh") < 0 ? "S" : firstChar.localeCompare("挖", "zh") < 0 ? "T" : firstChar.localeCompare("昔", "zh") < 0 ? "W" : firstChar.localeCompare("压", "zh") < 0 ? "X" : firstChar.localeCompare("匝", "zh") < 0 ? "Y" : "Z";
   } catch (e) {
     return "#";
   }
@@ -282,15 +207,14 @@ function renderRecords(filterText = "") {
   if (!container) return;
   container.innerHTML = "";
   const keyword = filterText.trim().toLowerCase();
-
-  const filtered = appState.rawRecords.filter((r) => {
+  
+  const filtered = appState.rawRecords.filter(r => {
     if (r.vendor.toLowerCase().includes(keyword)) return true;
     const items = getRecordItems(r);
-    return items.some(
-      (item) =>
-        (item.model && item.model.toLowerCase().includes(keyword)) ||
-        (item.remark && item.remark.toLowerCase().includes(keyword)) ||
-        (item.password && item.password.toLowerCase().includes(keyword)),
+    return items.some(item => 
+      (item.model && item.model.toLowerCase().includes(keyword)) ||
+      (item.remark && item.remark.toLowerCase().includes(keyword)) ||
+      (item.password && item.password.toLowerCase().includes(keyword))
     );
   });
 
@@ -314,35 +238,25 @@ function renderRecords(filterText = "") {
       .map((item) => {
         const recordItems = getRecordItems(item);
         let allPwList = [];
-        recordItems.forEach((it) => {
-          allPwList = allPwList.concat(
-            (it.password || "")
-              .split("\n")
-              .map((p) => p.trim())
-              .filter(Boolean),
-          );
+        recordItems.forEach(it => {
+            allPwList = allPwList.concat((it.password || "").split("\n").map(p => p.trim()).filter(Boolean));
         });
         const mainPw = allPwList[0] || "空";
         const extraCount = allPwList.length - 1;
-
-        const firstModel = recordItems.find((it) => it.model)?.model || "";
-        const isMultiModel = recordItems.filter((it) => it.model).length > 1;
+        
+        const firstModel = recordItems.find(it => it.model)?.model || "";
+        const isMultiModel = recordItems.filter(it => it.model).length > 1;
         const displayModel = isMultiModel ? `${firstModel}...` : firstModel;
 
         return `<div class="bg-white"><div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors"><div class="flex-1 min-w-0 pr-4"><div class="flex items-center space-x-2"><span class="font-semibold text-slate-800 text-base truncate">${escapeHtml(item.vendor)}</span>${displayModel ? `<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md font-medium truncate max-w-[120px]">${escapeHtml(displayModel)}</span>` : ""}</div></div><div class="flex items-center space-x-2"><div class="flex items-center space-x-1" onclick="event.stopPropagation();"><span class="text-xs font-mono font-bold text-slate-400 select-all bg-slate-50 px-2 py-1 rounded border border-slate-100/60 transition-all active:bg-[#f0fff4] active:text-[#07c160] max-w-[90px] truncate block">${escapeHtml(mainPw)}</span>${extraCount > 0 ? `<span class="text-[10px] text-[#07c160] bg-[#f0fff4] px-1 py-0.5 rounded font-bold">+${extraCount}</span>` : ""}</div><button onclick="event.stopPropagation(); openModal('${item.id}')" class="text-slate-300 hover:text-[#07c160] p-1 pl-2 ml-1 border-l border-slate-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="accordion-content bg-slate-50/40"><div class="p-4 text-xs text-slate-500 border-t border-slate-50/80 space-y-3 bg-slate-50/30"><div><span class="font-medium text-slate-400 block mb-1">设备厂家:</span> <span class="text-slate-700 select-text">${escapeHtml(item.vendor)}</span></div>
-        ${recordItems
-          .map((rItem, idx) => {
-            const subPwList = (rItem.password || "")
-              .split("\n")
-              .map((p) => p.trim())
-              .filter(Boolean);
-            return `<div class="${idx > 0 ? "border-t border-slate-200 pt-3 mt-1" : "pt-1"}">
+        ${recordItems.map((rItem, idx) => {
+            const subPwList = (rItem.password || "").split("\n").map(p => p.trim()).filter(Boolean);
+            return `<div class="${idx > 0 ? 'border-t border-slate-200 pt-3 mt-1' : 'pt-1'}">
                 <div><span class="font-medium text-slate-400 block mb-1.5">设备口令:</span><div class="flex flex-wrap gap-1.5">${subPwList.map((p) => `<div class="text-[#07c160] font-mono font-bold text-sm select-all bg-[#f0fff4] px-2.5 py-1 rounded border border-[#c6f6d5] hover:bg-[#c6f6d5] transition-colors">${escapeHtml(p)}</div>`).join("")}</div></div>
                 ${rItem.model ? `<div class="pt-2"><span class="font-medium text-slate-400 block mb-1">资产型号:</span> <span class="text-slate-700 select-text">${escapeHtml(rItem.model)}</span></div>` : ""}
                 ${rItem.remark ? `<div class="pt-2"><span class="font-medium text-slate-400 block mb-1">备注说明:</span> <span class="text-slate-600 select-text whitespace-pre-wrap">${escapeHtml(rItem.remark)}</span></div>` : ""}
             </div>`;
-          })
-          .join("")}</div></div></div>`;
+        }).join("")}</div></div></div>`;
       })
       .join("")}</div>`;
     container.appendChild(section);
@@ -369,27 +283,26 @@ function handleSearch() {
 function openModal(id = null) {
   const modal = document.getElementById("formModal");
   document.getElementById("recordForm").reset();
-  document.getElementById("entriesContainer").innerHTML = "";
-  document.getElementById("adminPassword").value =
-    sessionStorage.getItem("admin_pass") || "";
-
+  document.getElementById("entriesContainer").innerHTML = ""; 
+  document.getElementById("adminPassword").value = sessionStorage.getItem("admin_pass") || "";
+  
   if (id && typeof id === "string") {
     const record = appState.rawRecords.find((r) => r.id === id);
     if (record) {
       document.getElementById("modalTitle").textContent = "修改记录详情";
       document.getElementById("recordId").value = record.id;
       document.getElementById("formVendor").value = record.vendor;
-
+      
       const items = getRecordItems(record);
-      items.forEach((it) => addFormEntry(it));
-
+      items.forEach(it => addFormEntry(it));
+      
       document.getElementById("deleteBtn").classList.remove("hidden");
     }
   } else {
     document.getElementById("modalTitle").textContent = "新增密码记录";
     document.getElementById("recordId").value = "";
     document.getElementById("deleteBtn").classList.add("hidden");
-    addFormEntry();
+    addFormEntry(); 
   }
   modal.classList.remove("hidden");
 }
@@ -403,29 +316,27 @@ async function saveRecord(e) {
   const id = document.getElementById("recordId").value;
   const vendor = document.getElementById("formVendor").value.trim();
   const adminPass = document.getElementById("adminPassword").value.trim();
-
-  const entryEls = document.querySelectorAll(".entry-row");
-  const items = Array.from(entryEls)
-    .map((el) => {
+  
+  const entryEls = document.querySelectorAll('.entry-row');
+  const items = Array.from(entryEls).map(el => {
       return {
-        password: el.querySelector(".entry-password").value.trim(),
-        model: el.querySelector(".entry-model").value.trim(),
-        remark: el.querySelector(".entry-remark").value.trim(),
+          password: el.querySelector('.entry-password').value.trim(),
+          model: el.querySelector('.entry-model').value.trim(),
+          remark: el.querySelector('.entry-remark').value.trim()
       };
-    })
-    .filter((it) => it.password);
+  }).filter(it => it.password); 
 
   if (!vendor || items.length === 0 || !adminPass) {
-    return showToast("请完整填写必填项(厂家及口令)", "error");
+      return showToast("请完整填写必填项(厂家及至少一条口令)", "error");
   }
-
+  
   sessionStorage.setItem("admin_pass", adminPass);
   let newRecords = [...appState.rawRecords];
-
+  
   const topLevelData = {
-    password: items[0].password,
-    model: items[0].model,
-    remark: items[0].remark,
+      password: items[0].password,
+      model: items[0].model,
+      remark: items[0].remark
   };
 
   if (id) {
@@ -433,12 +344,10 @@ async function saveRecord(e) {
     if (idx !== -1) newRecords[idx] = { id, vendor, items, ...topLevelData };
   } else {
     newRecords.push({
-      id: crypto.randomUUID
-        ? crypto.randomUUID()
-        : Math.random().toString(36).substring(2),
+      id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
       vendor,
       items,
-      ...topLevelData,
+      ...topLevelData
     });
   }
   await syncToCloudflare(newRecords, adminPass);
@@ -450,12 +359,9 @@ async function deleteRecord() {
   const adminPass = document.getElementById("adminPassword").value.trim();
   if (!adminPass) return showToast("请输入管理员操作密码", "error");
   if (!id) return;
-  const confirmName = prompt(
-    `警告：此操作不可逆！\n请输入设备厂家名称 "${vendor}" 以确认永久删除：`,
-  );
-  if (confirmName !== vendor)
-    return showToast("输入不匹配，已取消删除", "error");
-
+  const confirmName = prompt(`警告：此操作不可逆！\n请输入设备厂家名称 "${vendor}" 以确认永久删除：`);
+  if (confirmName !== vendor) return showToast("输入不匹配，已取消删除", "error");
+  
   sessionStorage.setItem("admin_pass", adminPass);
   const newRecords = appState.rawRecords.filter((r) => r.id !== id);
   await syncToCloudflare(newRecords, adminPass);
@@ -478,9 +384,8 @@ async function syncToCloudflare(newRecordsData, adminPass) {
     if (contentType && contentType.includes("application/json")) {
       resData = await response.json();
     }
-    if (!response.ok)
-      throw new Error(resData.error || `服务器响应异常 (${response.status})`);
-
+    if (!response.ok) throw new Error(resData.error || `服务器响应异常 (${response.status})`);
+    
     appState.rawRecords = newRecordsData;
     showToast("数据同步成功", "success");
     closeModal();
@@ -527,23 +432,12 @@ function escapeHtml(string) {
   let lastIndex = 0;
   for (index = match.index; index < str.length; index++) {
     switch (str.charCodeAt(index)) {
-      case 34:
-        escape = "&quot;";
-        break;
-      case 38:
-        escape = "&amp;";
-        break;
-      case 39:
-        escape = "&#39;";
-        break;
-      case 60:
-        escape = "&lt;";
-        break;
-      case 62:
-        escape = "&gt;";
-        break;
-      default:
-        continue;
+      case 34: escape = "&quot;"; break;
+      case 38: escape = "&amp;"; break;
+      case 39: escape = "&#39;"; break;
+      case 60: escape = "&lt;"; break;
+      case 62: escape = "&gt;"; break;
+      default: continue;
     }
     if (lastIndex !== index) html += str.substring(lastIndex, index);
     lastIndex = index + 1;

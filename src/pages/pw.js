@@ -1,7 +1,6 @@
 let appState = { rawRecords: [] };
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
 
-// 数据兼容处理：兼容旧版单条数据和新版多条 items 数组
 function getRecordItems(record) {
   if (record.items && Array.isArray(record.items)) return record.items;
   return [{ password: record.password || "", model: record.model || "", remark: record.remark || "" }];
@@ -238,22 +237,13 @@ function renderRecords(filterText = "") {
     section.innerHTML = `<h2 class="text-xs font-bold text-[#07c160] bg-slate-50 py-1 mb-2 px-1 tracking-wider rounded">${letter}</h2><div class="bg-white rounded-xl border border-slate-100 shadow-sm divide-y divide-slate-50 overflow-hidden">${itemsGroup
       .map((item) => {
         const recordItems = getRecordItems(item);
-        let allPwList = [];
-        recordItems.forEach(it => {
-            allPwList = allPwList.concat((it.password || "").split("\n").map(p => p.trim()).filter(Boolean));
-        });
 
         return `<div class="bg-white">
-            <div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors">
-                <div class="font-semibold text-slate-800 text-base flex-shrink-0 truncate max-w-[45%]">
+            <div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors select-none">
+                <div class="font-semibold text-slate-800 text-base flex-1 truncate pr-4">
                     ${escapeHtml(item.vendor)}
                 </div>
-                <div class="flex-1 min-w-0 mx-3 flex justify-end" onclick="event.stopPropagation();">
-                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-nowrap" style="max-width: 100%;">
-                        ${allPwList.length ? allPwList.map(pw => `<span class="text-xs font-mono font-bold text-[#07c160] bg-[#f0fff4] border border-[#c6f6d5] px-2 py-1 rounded whitespace-nowrap select-all">${escapeHtml(pw)}</span>`).join('') : '<span class="text-slate-400 text-xs">暂无口令</span>'}
-                    </div>
-                </div>
-                <button onclick="event.stopPropagation(); openModal('${item.id}')" class="flex-shrink-0 text-slate-300 hover:text-[#07c160] p-1 border-l border-slate-100 pl-2 ml-1">
+                <button onclick="event.stopPropagation(); openModal('${item.id}')" class="flex-shrink-0 text-slate-300 hover:text-[#07c160] p-1 border-l border-slate-100 pl-3 ml-1" aria-label="编辑">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
             </div>

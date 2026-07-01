@@ -1,6 +1,7 @@
 let appState = { rawRecords: [] };
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
 
+// 数据兼容处理：兼容旧版单条数据和新版多条 items 数组
 function getRecordItems(record) {
   if (record.items && Array.isArray(record.items)) return record.items;
   return [{ password: record.password || "", model: record.model || "", remark: record.remark || "" }];
@@ -58,7 +59,7 @@ export const renderPW = () => {
                     
                     <button type="button" onclick="addFormEntry()" class="w-full mt-2 py-2 border-2 border-dashed border-slate-200 text-slate-500 rounded-lg text-sm font-bold hover:border-[#07c160] hover:text-[#07c160] bg-slate-50/50 hover:bg-[#f0fff4] transition-colors flex items-center justify-center space-x-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        <span>添加</span>
+                        <span>添加一行口令</span>
                     </button>
 
                     <div class="mt-6 pt-4 border-t border-slate-100">
@@ -241,22 +242,38 @@ function renderRecords(filterText = "") {
         recordItems.forEach(it => {
             allPwList = allPwList.concat((it.password || "").split("\n").map(p => p.trim()).filter(Boolean));
         });
-        const mainPw = allPwList[0] || "空";
-        const extraCount = allPwList.length - 1;
-        
-        const firstModel = recordItems.find(it => it.model)?.model || "";
-        const isMultiModel = recordItems.filter(it => it.model).length > 1;
-        const displayModel = isMultiModel ? `${firstModel}...` : firstModel;
 
-        return `<div class="bg-white"><div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors"><div class="flex-1 min-w-0 pr-4"><div class="flex items-center space-x-2"><span class="font-semibold text-slate-800 text-base truncate">${escapeHtml(item.vendor)}</span>${displayModel ? `<span class="bg-slate-100 text-slate-600 text-[11px] px-2 py-0.5 rounded-md font-medium truncate max-w-[120px]">${escapeHtml(displayModel)}</span>` : ""}</div></div><div class="flex items-center space-x-2"><div class="flex items-center space-x-1" onclick="event.stopPropagation();"><span class="text-xs font-mono font-bold text-slate-400 select-all bg-slate-50 px-2 py-1 rounded border border-slate-100/60 transition-all active:bg-[#f0fff4] active:text-[#07c160] max-w-[90px] truncate block">${escapeHtml(mainPw)}</span>${extraCount > 0 ? `<span class="text-[10px] text-[#07c160] bg-[#f0fff4] px-1 py-0.5 rounded font-bold">+${extraCount}</span>` : ""}</div><button onclick="event.stopPropagation(); openModal('${item.id}')" class="text-slate-300 hover:text-[#07c160] p-1 pl-2 ml-1 border-l border-slate-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="accordion-content bg-slate-50/40"><div class="p-4 text-xs text-slate-500 border-t border-slate-50/80 space-y-3 bg-slate-50/30"><div><span class="font-medium text-slate-400 block mb-1">设备厂家:</span> <span class="text-slate-700 select-text">${escapeHtml(item.vendor)}</span></div>
-        ${recordItems.map((rItem, idx) => {
-            const subPwList = (rItem.password || "").split("\n").map(p => p.trim()).filter(Boolean);
-            return `<div class="${idx > 0 ? 'border-t border-slate-200 pt-3 mt-1' : 'pt-1'}">
-                <div><span class="font-medium text-slate-400 block mb-1.5">设备口令:</span><div class="flex flex-wrap gap-1.5">${subPwList.map((p) => `<div class="text-[#07c160] font-mono font-bold text-sm select-all bg-[#f0fff4] px-2.5 py-1 rounded border border-[#c6f6d5] hover:bg-[#c6f6d5] transition-colors">${escapeHtml(p)}</div>`).join("")}</div></div>
-                ${rItem.model ? `<div class="pt-2"><span class="font-medium text-slate-400 block mb-1">资产型号:</span> <span class="text-slate-700 select-text">${escapeHtml(rItem.model)}</span></div>` : ""}
-                ${rItem.remark ? `<div class="pt-2"><span class="font-medium text-slate-400 block mb-1">备注说明:</span> <span class="text-slate-600 select-text whitespace-pre-wrap">${escapeHtml(rItem.remark)}</span></div>` : ""}
-            </div>`;
-        }).join("")}</div></div></div>`;
+        return `<div class="bg-white">
+            <div onclick="toggleAccordion(this)" class="w-full px-4 py-3.5 flex justify-between items-center hover:bg-slate-50/50 cursor-pointer active:bg-slate-100/50 transition-colors">
+                <div class="font-semibold text-slate-800 text-base flex-shrink-0 truncate max-w-[45%]">
+                    ${escapeHtml(item.vendor)}
+                </div>
+                <div class="flex-1 min-w-0 mx-3 flex justify-end" onclick="event.stopPropagation();">
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-nowrap" style="max-width: 100%;">
+                        ${allPwList.length ? allPwList.map(pw => `<span class="text-xs font-mono font-bold text-[#07c160] bg-[#f0fff4] border border-[#c6f6d5] px-2 py-1 rounded whitespace-nowrap select-all">${escapeHtml(pw)}</span>`).join('') : '<span class="text-slate-400 text-xs">暂无口令</span>'}
+                    </div>
+                </div>
+                <button onclick="event.stopPropagation(); openModal('${item.id}')" class="flex-shrink-0 text-slate-300 hover:text-[#07c160] p-1 border-l border-slate-100 pl-2 ml-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+            </div>
+            
+            <div class="accordion-content bg-slate-50/40">
+                <div class="px-3 py-2 border-t border-slate-100 space-y-1.5">
+                    ${recordItems.map((rItem) => {
+                        const subPwList = (rItem.password || "").split("\n").map(p => p.trim()).filter(Boolean);
+                        return `
+                        <div class="flex items-center gap-2 bg-white px-2 py-1.5 rounded-md border border-slate-200/50 shadow-sm text-xs">
+                            <div class="flex-1 min-w-0 flex items-center gap-1 overflow-x-auto no-scrollbar">
+                                ${subPwList.length ? subPwList.map(p => `<span class="text-[#07c160] font-mono font-bold bg-[#f0fff4] border border-[#c6f6d5] px-1 py-0.5 rounded select-all whitespace-nowrap">${escapeHtml(p)}</span>`).join('') : '<span class="text-slate-300 font-normal">-</span>'}
+                            </div>
+                            <div class="flex-1 min-w-0 text-slate-600 truncate border-l border-slate-100 pl-2" title="${escapeHtml(rItem.model)}">${escapeHtml(rItem.model) || '<span class="text-slate-300 font-normal">-</span>'}</div>
+                            <div class="flex-1 min-w-0 text-slate-500 truncate border-l border-slate-100 pl-2" title="${escapeHtml(rItem.remark)}">${escapeHtml(rItem.remark) || '<span class="text-slate-300 font-normal">-</span>'}</div>
+                        </div>`;
+                    }).join("")}
+                </div>
+            </div>
+        </div>`;
       })
       .join("")}</div>`;
     container.appendChild(section);
